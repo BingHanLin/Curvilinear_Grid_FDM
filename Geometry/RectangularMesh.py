@@ -57,9 +57,9 @@ class RectangularMesh:
         assert np.all(self.Z[0,0,:] == z_)
 
 
-        self.X_flatten = (np.hstack(np.hstack(self.X)))
-        self.Y_flatten = (np.hstack(np.hstack(self.Y)))
-        self.Z_flatten = (np.hstack(np.hstack(self.Z)))
+        self.X_flatten = np.reshape(self.X, self.node_number, order='F')
+        self.Y_flatten = np.reshape(self.Y, self.node_number, order='F')
+        self.Z_flatten = np.reshape(self.Z, self.node_number, order='F')
 
         self.mesh_size = self.X.shape
         
@@ -95,7 +95,7 @@ class RectangularMesh:
         if k_end == True:
             node_num_list[:,:,-1] = 1 
 
-        node_num_list = (np.hstack(np.hstack(node_num_list)))
+        node_num_list = np.reshape(node_num_list, self.node_number, order='F') 
         i_bool = np.where(node_num_list == 1)
         index_list = np.append(index_list, i_bool)
 

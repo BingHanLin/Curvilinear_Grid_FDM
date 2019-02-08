@@ -34,15 +34,15 @@ class SolverLaplace:
     def _assmemble(self):
 
         self._SystemMatrix = sp.csr_matrix(
-                              self._Opertor.der_2('i').multiply(self.flatten(self._CCoeff.inv_metric_tensor[...,0,0])) + \
-                              self._Opertor.der_2('j').multiply(self.flatten(self._CCoeff.inv_metric_tensor[...,1,1])) + \
-                              2*self._Opertor.der_11('ij').multiply(self.flatten(self._CCoeff.inv_metric_tensor[...,1,2])) - \
-                              self._Opertor.der_1('i').multiply((self.flatten(self._CCoeff.inv_metric_tensor[...,0,0])*self.flatten(self._CCoeff.christoffel_symbol[...,0,0,0]))) - \
-                              self._Opertor.der_1('j').multiply((self.flatten(self._CCoeff.inv_metric_tensor[...,0,0])*self.flatten(self._CCoeff.christoffel_symbol[...,1,0,0]))) - \
-                              self._Opertor.der_1('i').multiply((self.flatten(self._CCoeff.inv_metric_tensor[...,1,1])*self.flatten(self._CCoeff.christoffel_symbol[...,0,1,1]))) - \
-                              self._Opertor.der_1('j').multiply((self.flatten(self._CCoeff.inv_metric_tensor[...,1,1])*self.flatten(self._CCoeff.christoffel_symbol[...,1,1,1]))) - \
-                              self._Opertor.der_1('i').multiply((self.flatten(self._CCoeff.inv_metric_tensor[...,0,1])*self.flatten(self._CCoeff.christoffel_symbol[...,0,0,1]))) - \
-                              self._Opertor.der_1('j').multiply((self.flatten(self._CCoeff.inv_metric_tensor[...,0,1])*self.flatten(self._CCoeff.christoffel_symbol[...,1,0,1])))
+                              self._Opertor.der_2('i').multiply(self._CCoeff.get_inv_metric_tensor(0,0)) + \
+                              self._Opertor.der_2('j').multiply(self._CCoeff.get_inv_metric_tensor(1,1)) + \
+                              2*self._Opertor.der_11('ij').multiply(self._CCoeff.get_inv_metric_tensor(1,2)) - \
+                              self._Opertor.der_1('i').multiply( self._CCoeff.get_inv_metric_tensor(0,0) * self._CCoeff.get_christoffel_symbol(0,0,0)) - \
+                              self._Opertor.der_1('j').multiply( self._CCoeff.get_inv_metric_tensor(0,0) * self._CCoeff.get_christoffel_symbol(1,0,0)) - \
+                              self._Opertor.der_1('i').multiply( self._CCoeff.get_inv_metric_tensor(1,1) * self._CCoeff.get_christoffel_symbol(0,1,1)) - \
+                              self._Opertor.der_1('j').multiply( self._CCoeff.get_inv_metric_tensor(1,1) * self._CCoeff.get_christoffel_symbol(1,1,1)) - \
+                              self._Opertor.der_1('i').multiply( self._CCoeff.get_inv_metric_tensor(0,1) * self._CCoeff.get_christoffel_symbol(0,0,1)) - \
+                              self._Opertor.der_1('j').multiply( self._CCoeff.get_inv_metric_tensor(0,1) * self._CCoeff.get_christoffel_symbol(1,0,1))
                                 )
 
 

@@ -37,8 +37,8 @@ class SolverLaplace:
     def _assmemble(self):
 
         self._SystemMatrix = sp.csr_matrix(
-                              self._Opertor.der_2('i').multiply(self.flatten(self._CCoeff.inv_metric_tensor[...,0,0])) + \
-                              self._Opertor.der_2('j').multiply(self.flatten(self._CCoeff.inv_metric_tensor[...,1,1])) 
+                              self._Opertor.der_2('i').multiply(self._CCoeff.get_inv_metric_tensor(0,0)) + \
+                              self._Opertor.der_2('j').multiply(self._CCoeff.get_inv_metric_tensor(0,0)) 
                               )
 
         # DIRICHLET
@@ -47,50 +47,35 @@ class SolverLaplace:
         self._Opertor.csr_zero_rows( self._SystemMatrix, np.where(self._BCtype == NodeType.DIRICHLET))
         self._Opertor.csr_zero_rows( temp_matrix1, np.where(self._BCtype != NodeType.DIRICHLET))
       
-
-        co_basis_1_flatten = self._CCoeff.co_basis_1[...,:].reshape(-1,self._CCoeff.co_basis_1[...,:].shape[-1])
-        co_basis_2_flatten = self._CCoeff.co_basis_2[...,:].reshape(-1,self._CCoeff.co_basis_2[...,:].shape[-1])
-        co_basis_3_flatten = self._CCoeff.co_basis_3[...,:].reshape(-1,self._CCoeff.co_basis_3[...,:].shape[-1])
-
-        con_basis_1_flatten = self._CCoeff.con_basis_1[...,:].reshape(-1,self._CCoeff.con_basis_1[...,:].shape[-1])
-        con_basis_2_flatten = self._CCoeff.con_basis_2[...,:].reshape(-1,self._CCoeff.con_basis_2[...,:].shape[-1])
-        con_basis_3_flatten = self._CCoeff.con_basis_3[...,:].reshape(-1,self._CCoeff.con_basis_3[...,:].shape[-1])
         
         
-        temp_matrix2 = np.zeros((self._Mesh.node_number,self._Mesh.node_number))
-        temp_matrix3 = np.zeros((self._Mesh.node_number,self._Mesh.node_number))
+        # NEUMANN
+        outter_norm  = self._CCoeff.get_con_basis(1) / np.linalg.norm(self._CCoeff.get_con_basis(1), axis=1)[:,None]
 
-        for i in range(len(self._Mesh.X_flatten)):
+        temp_matrix2 = (
+        self._Opertor.der_1('i').transpose().multiply( self._CCoeff.get_inv_metric_tensor(0,0)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(0),outter_norm)).transpose() +
+        self._Opertor.der_1('i').transpose().multiply( self._CCoeff.get_inv_metric_tensor(1,0)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(1),outter_norm)).transpose() +
+        self._Opertor.der_1('i').transpose().multiply( self._CCoeff.get_inv_metric_tensor(2,0)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(2),outter_norm)).transpose() +
+        self._Opertor.der_1('j').transpose().multiply( self._CCoeff.get_inv_metric_tensor(0,1)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(0),outter_norm)).transpose() +
+        self._Opertor.der_1('j').transpose().multiply( self._CCoeff.get_inv_metric_tensor(1,1)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(1),outter_norm)).transpose() +
+        self._Opertor.der_1('j').transpose().multiply( self._CCoeff.get_inv_metric_tensor(2,1)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(2),outter_norm)).transpose() 
+        )
 
-            if self._BCtype[i] == NodeType.NEUMANN and self._Mesh.X_flatten[i] == 0:
-                outter_norm  = con_basis_1_flatten[i] / np.linalg.norm(con_basis_1_flatten[i])
+        outter_norm  = -self._CCoeff.get_con_basis(2) / np.linalg.norm(self._CCoeff.get_con_basis(2), axis=1)[:,None]
 
-                temp_matrix2[i,:] =  self._CCoeff.inv_metric_tensor[...,0,0].flatten()[:, None][i]*self._Opertor.der_1('i')[i,:]*np.dot(co_basis_1_flatten[i],outter_norm) + \
-                                            self._CCoeff.inv_metric_tensor[...,1,0].flatten()[:, None][i]*self._Opertor.der_1('i')[i,:]*np.dot(co_basis_2_flatten[i],outter_norm) + \
-                                            self._CCoeff.inv_metric_tensor[...,2,0].flatten()[:, None][i]*self._Opertor.der_1('i')[i,:]*np.dot(co_basis_3_flatten[i],outter_norm) + \
-                                            self._CCoeff.inv_metric_tensor[...,0,1].flatten()[:, None][i]*self._Opertor.der_1('j')[i,:]*np.dot(co_basis_1_flatten[i],outter_norm) + \
-                                            self._CCoeff.inv_metric_tensor[...,1,1].flatten()[:, None][i]*self._Opertor.der_1('j')[i,:]*np.dot(co_basis_2_flatten[i],outter_norm) + \
-                                            self._CCoeff.inv_metric_tensor[...,2,1].flatten()[:, None][i]*self._Opertor.der_1('j')[i,:]*np.dot(co_basis_3_flatten[i],outter_norm) 
-                
-                # self.__SystemMatrix[i,:] =  self._Opertor.der_1st('i')[i,:]*np.dot(con_basis_1_flatten[i],outter_norm) + \
-                #                             self._Opertor.der_1st('j')[i,:]*np.dot(con_basis_2_flatten[i],outter_norm)
+        temp_matrix3 = (
+        self._Opertor.der_1('i').transpose().multiply( self._CCoeff.get_inv_metric_tensor(0,0)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(0),outter_norm)).transpose() +
+        self._Opertor.der_1('i').transpose().multiply( self._CCoeff.get_inv_metric_tensor(1,0)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(1),outter_norm)).transpose() +
+        self._Opertor.der_1('i').transpose().multiply( self._CCoeff.get_inv_metric_tensor(2,0)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(2),outter_norm)).transpose() +
+        self._Opertor.der_1('j').transpose().multiply( self._CCoeff.get_inv_metric_tensor(0,1)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(0),outter_norm)).transpose() +
+        self._Opertor.der_1('j').transpose().multiply( self._CCoeff.get_inv_metric_tensor(1,1)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(1),outter_norm)).transpose() +
+        self._Opertor.der_1('j').transpose().multiply( self._CCoeff.get_inv_metric_tensor(2,1)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(2),outter_norm)).transpose() 
+        )
 
-      
-            elif self._BCtype[i] == NodeType.NEUMANN and self._Mesh.Y_flatten[i] == 0:
-                outter_norm  = -con_basis_2_flatten[i] / np.linalg.norm(con_basis_2_flatten[i])
-                
-                temp_matrix3[i,:] =  self._CCoeff.inv_metric_tensor[...,0,0].flatten()[:, None][i]*self._Opertor.der_1('i')[i,:]*np.dot(co_basis_1_flatten[i],outter_norm) + \
-                                            self._CCoeff.inv_metric_tensor[...,1,0].flatten()[:, None][i]*self._Opertor.der_1('i')[i,:]*np.dot(co_basis_2_flatten[i],outter_norm) + \
-                                            self._CCoeff.inv_metric_tensor[...,2,0].flatten()[:, None][i]*self._Opertor.der_1('i')[i,:]*np.dot(co_basis_3_flatten[i],outter_norm) + \
-                                            self._CCoeff.inv_metric_tensor[...,0,1].flatten()[:, None][i]*self._Opertor.der_1('j')[i,:]*np.dot(co_basis_1_flatten[i],outter_norm) + \
-                                            self._CCoeff.inv_metric_tensor[...,1,1].flatten()[:, None][i]*self._Opertor.der_1('j')[i,:]*np.dot(co_basis_2_flatten[i],outter_norm) + \
-                                            self._CCoeff.inv_metric_tensor[...,2,1].flatten()[:, None][i]*self._Opertor.der_1('j')[i,:]*np.dot(co_basis_3_flatten[i],outter_norm) 
-        
-                # self.__SystemMatrix[i,:] =  self._Opertor.der_1st('i')[i,:]*np.dot(con_basis_1_flatten[i],outter_norm) + \
-                #                             self._Opertor.der_1st('j')[i,:]*np.dot(con_basis_2_flatten[i],outter_norm)
+        self._Opertor.csr_zero_rows( temp_matrix2, np.where((self._BCtype != NodeType.NEUMANN) & (self._Mesh.X_flatten != 0)))
+        self._Opertor.csr_zero_rows( temp_matrix3, np.where((self._BCtype != NodeType.NEUMANN) & (self._Mesh.Y_flatten != 0)))
 
-        temp_matrix2 = sp.csr_matrix(temp_matrix2)
-        temp_matrix3 = sp.csr_matrix(temp_matrix3)
+
         self._SystemMatrix = self._SystemMatrix + temp_matrix1 + temp_matrix2 + temp_matrix3
 
         print ('System matrix is created')

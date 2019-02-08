@@ -31,8 +31,8 @@ class SolverLaplace:
     def _assmemble(self):
 
         self._SystemMatrix = sp.csr_matrix(
-                              self._Opertor.der_2('i').multiply(np.hstack(np.hstack(self._CCoeff.inv_metric_tensor[...,0,0]))) + \
-                              self._Opertor.der_2('j').multiply(np.hstack(np.hstack(self._CCoeff.inv_metric_tensor[...,1,1])))
+                              self._Opertor.der_2('i').multiply(self._CCoeff.get_inv_metric_tensor(0,0)) + \
+                              self._Opertor.der_2('j').multiply(self._CCoeff.get_inv_metric_tensor(1,1))
                                )
 
         temp_matrix  = self._Opertor.no_operation()
