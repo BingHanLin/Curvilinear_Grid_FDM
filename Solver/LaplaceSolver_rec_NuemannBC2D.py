@@ -4,7 +4,7 @@ import enum
 import os
 import shutil
 import scipy.sparse as sp
-from scipy.sparse.linalg import bicgstab, spsolve ,gmres ,lgmres
+from scipy.sparse.linalg import bicgstab, spsolve, gmres, lgmres
 
 import matplotlib.pyplot as plt
 from matplotlib import cm
@@ -16,7 +16,7 @@ class NodeType(enum.IntEnum):
     NEUMANN = 2
 
     
-
+# http://mragheb.com/NPRE%20498MC%20Monte%20Carlo%20Simulations%20in%20Engineering/Mixed%20Boundary%20Value%20Problems.pdf
 
 class SolverLaplace:
 
@@ -31,26 +31,31 @@ class SolverLaplace:
         
         print ('Laplace solver is created')
 
-    def flatten(self, data):
-        return np.hstack(np.hstack(data))
 
     def _assmemble(self):
 
         self._SystemMatrix = sp.csr_matrix(
                               self._Opertor.der_2('i').multiply(self._CCoeff.get_inv_metric_tensor(0,0)) + \
-                              self._Opertor.der_2('j').multiply(self._CCoeff.get_inv_metric_tensor(0,0)) 
-                              )
+                              self._Opertor.der_2('j').multiply(self._CCoeff.get_inv_metric_tensor(1,1)) + \
+                              2*self._Opertor.der_11('ij').multiply(self._CCoeff.get_inv_metric_tensor(1,2)) - \
+                              self._Opertor.der_1('i').multiply( self._CCoeff.get_inv_metric_tensor(0,0) * self._CCoeff.get_christoffel_symbol(0,0,0)) - \
+                              self._Opertor.der_1('j').multiply( self._CCoeff.get_inv_metric_tensor(0,0) * self._CCoeff.get_christoffel_symbol(1,0,0)) - \
+                              self._Opertor.der_1('i').multiply( self._CCoeff.get_inv_metric_tensor(1,1) * self._CCoeff.get_christoffel_symbol(0,1,1)) - \
+                              self._Opertor.der_1('j').multiply( self._CCoeff.get_inv_metric_tensor(1,1) * self._CCoeff.get_christoffel_symbol(1,1,1)) - \
+                              self._Opertor.der_1('i').multiply( self._CCoeff.get_inv_metric_tensor(0,1) * self._CCoeff.get_christoffel_symbol(0,0,1)) - \
+                              self._Opertor.der_1('j').multiply( self._CCoeff.get_inv_metric_tensor(0,1) * self._CCoeff.get_christoffel_symbol(1,0,1))
+                                )
+        
+        self._Opertor.csr_zero_rows( self._SystemMatrix, np.where( self._BCtype != NodeType.INTERIOR ))
+
 
         # DIRICHLET
         temp_matrix1  = self._Opertor.no_operation()
-
-        self._Opertor.csr_zero_rows( self._SystemMatrix, np.where(self._BCtype == NodeType.DIRICHLET))
         self._Opertor.csr_zero_rows( temp_matrix1, np.where(self._BCtype != NodeType.DIRICHLET))
-      
-        
-        
+
+    
         # NEUMANN
-        outter_norm  = self._CCoeff.get_con_basis(1) / np.linalg.norm(self._CCoeff.get_con_basis(1), axis=1)[:,None]
+        outter_norm  = self._CCoeff.get_con_basis(0) / np.linalg.norm(self._CCoeff.get_con_basis(0), axis=1)[:,None]
 
         temp_matrix2 = (
         self._Opertor.der_1('i').transpose().multiply( self._CCoeff.get_inv_metric_tensor(0,0)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(0),outter_norm)).transpose() +
@@ -61,7 +66,7 @@ class SolverLaplace:
         self._Opertor.der_1('j').transpose().multiply( self._CCoeff.get_inv_metric_tensor(2,1)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(2),outter_norm)).transpose() 
         )
 
-        outter_norm  = -self._CCoeff.get_con_basis(2) / np.linalg.norm(self._CCoeff.get_con_basis(2), axis=1)[:,None]
+        outter_norm  = (-self._CCoeff.get_con_basis(1) / np.linalg.norm(self._CCoeff.get_con_basis(1), axis=1)[:,None])
 
         temp_matrix3 = (
         self._Opertor.der_1('i').transpose().multiply( self._CCoeff.get_inv_metric_tensor(0,0)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(0),outter_norm)).transpose() +
@@ -72,8 +77,10 @@ class SolverLaplace:
         self._Opertor.der_1('j').transpose().multiply( self._CCoeff.get_inv_metric_tensor(2,1)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(2),outter_norm)).transpose() 
         )
 
-        self._Opertor.csr_zero_rows( temp_matrix2, np.where((self._BCtype != NodeType.NEUMANN) & (self._Mesh.X_flatten != 0)))
-        self._Opertor.csr_zero_rows( temp_matrix3, np.where((self._BCtype != NodeType.NEUMANN) & (self._Mesh.Y_flatten != 0)))
+        # be careful of the intersection of two boudnary
+        self._Opertor.csr_zero_rows( temp_matrix2, np.where( (self._Mesh.X_flatten != 0)))
+        self._Opertor.csr_zero_rows( temp_matrix2, np.where( (self._Mesh.X_flatten == 0) & (self._Mesh.Y_flatten == 0) ))
+        self._Opertor.csr_zero_rows( temp_matrix3, np.where( (self._Mesh.Y_flatten != 0)))
 
 
         self._SystemMatrix = self._SystemMatrix + temp_matrix1 + temp_matrix2 + temp_matrix3

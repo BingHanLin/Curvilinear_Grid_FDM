@@ -15,7 +15,7 @@ from Solver.LaplaceSolver_rec_NuemannBC2D import SolverLaplace, NodeType
 Lx = 1
 Ly = 1
 
-nx = 15
+nx = 10
 ny = 10
 
 dir_name = 'OUTOUT'
