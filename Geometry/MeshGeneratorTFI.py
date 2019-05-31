@@ -24,8 +24,6 @@ def Vinokur_Distribution(edge, d_s1, d_s2, num_node):
     A = np.sqrt(s0/s1)
     B = np.sqrt(s0*s1)
 
-    
-
     d_z = root(func_sin, 1,  args=(B,) ).x[0]
 
     xi_bar = ( xi_list-xi_min ) / ( xi_max-xi_min )
@@ -66,6 +64,9 @@ def func_sin(x, c):
         return np.sin(x) / x - c
     elif c > 1:
         return np.sinh(x) / x - c
+
+
+
 
 def TFI(xi_edge_min, xi_edge_max, eta_edge_min, eta_edge_max, soni=True):
 
@@ -130,10 +131,6 @@ def cal_arclength(edge):
     arclength_ratio = arclength_ratio/sum_arclength
 
     return sum_arclength, arclength_ratio
-
-if __name__ == "__main__":
-
-    database = DataBase()
 
 
         
