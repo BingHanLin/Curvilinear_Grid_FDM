@@ -12,6 +12,8 @@ def Vinokur_Distribution(edge, d_s1, d_s2, num_node):
     xi_list = np.linspace(xi_min, xi_max, num_node, endpoint=True)
 
     # calculate arclength from database
+    edge['sum_arclength'], edge['arclength_ratio'] = cal_arclength(edge)
+
     s_max = edge['sum_arclength']
 
     # calculate uniform spacing between xi_min and xi_max
@@ -67,7 +69,6 @@ def func_sin(x, c):
 
 
 
-
 def TFI(xi_edge_min, xi_edge_max, eta_edge_min, eta_edge_max, soni=True):
 
     num_xi = len(eta_edge_min['node'][0,:])
@@ -96,20 +97,13 @@ def TFI(xi_edge_min, xi_edge_max, eta_edge_min, eta_edge_max, soni=True):
         err_xi_max[:,index_eta] = xi_edge_max['node'][:, index_eta] - pos_vec[:,num_xi -1, index_eta]
 
 
-    axarr[2].scatter(pos_vec[0,:, :], pos_vec[1,:, :], s=30, facecolors='none', edgecolors='k', marker ='.')
-
     for index_eta in range(num_eta):
         for index_xi in range(num_xi):
             xi_bar = index_xi / (num_xi -1)
             pos_vec[:,index_xi, index_eta] += (1-xi_bar)*err_xi_min[:,index_eta] + xi_bar*err_xi_max[:,index_eta]
 
-    for index_eta in range(num_eta):
-        axarr[3].plot(pos_vec[0,:, index_eta], pos_vec[1,:, index_eta], 'k', linewidth=0.5 )
-    for index_xi in range(num_xi):
-        axarr[3].plot(pos_vec[0,index_xi, :], pos_vec[1,index_xi, :], 'k', linewidth=0.5 )
+    return np.expand_dims(pos_vec[0,:,:], axis=-1), np.expand_dims(pos_vec[1,:,:], axis=-1), np.expand_dims(pos_vec[2,:,:], axis=-1)
 
-
-    print (np.expand_dims(pos_vec[0,:,:], axis=-1).shape)
 
 
 def cal_arclength(edge):

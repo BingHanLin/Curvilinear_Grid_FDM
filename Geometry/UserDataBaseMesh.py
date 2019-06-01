@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from mpl_toolkits.mplot3d import Axes3D
 
-from .MeshGeneratorTFI import Vinokur_Distribution
+from .MeshGeneratorTFI import Vinokur_Distribution, cal_arclength, TFI
 
 class DataBase:
 
@@ -137,126 +137,112 @@ class UserDataBaseMesh:
 
     def __create_grid(self, database):
 
+
         database.edge1['node'] = Vinokur_Distribution(database.edge_1_list[0], 0.01, 0.4, 21)
-        print (database.edge1['node'])
-
-        # edge1['node'] = Vinokur_Distribution(database.edge_1a, 0.01, 0.4, 21)
-        # edge1['sum_arclength'], edge1['arclength_ratio'] = cal_arclength(edge1)
-
-        # edge2['node'] = Vinokur_Distribution(database.edge_2a, 0.02, 0.1, 31)
-        # edge2['node'] = np.hstack((edge2['node'][:, :-1], Vinokur_Distribution(database.edge_2b, 0.1, 0.1, 41) ))
-        # edge2['node'] = np.hstack((edge2['node'][:, :-1], Vinokur_Distribution(database.edge_2c, 0.1, 0.04, 31) ))
-        # edge2['node'] = np.hstack((edge2['node'][:, :-1], Vinokur_Distribution(database.edge_2d, 0.05, 0.5, 25) ))
-        # edge2['sum_arclength'], edge2['arclength_ratio'] = cal_arclength(edge2)
-
-        # edge3['node'] = Vinokur_Distribution(database.edge_3a, 0.01, 0.4, 21)
-        # edge3['sum_arclength'], edge3['arclength_ratio'] = cal_arclength(edge3)
-
-        # edge4['node'] = Vinokur_Distribution(database.edge_4a, 0.1, 0.3, 16)
-        # edge4['node'] = np.hstack((edge4['node'][:,:-1], Vinokur_Distribution(database.edge_4b, 0.3, 0.1, 16) ))
-        # edge4['node'] = np.hstack((edge4['node'][:,:-1], Vinokur_Distribution(database.edge_4c, 0.1, 0.1, 41) ))
-        # edge4['node'] = np.hstack((edge4['node'][:,:-1], Vinokur_Distribution(database.edge_4d, 0.1, 0.05, 31) ))
-        # edge4['node'] = np.hstack((edge4['node'][:,:-1], Vinokur_Distribution(database.edge_4e, 0.05, 0.5, 25) ))
-        # edge4['sum_arclength'], edge4['arclength_ratio'] = cal_arclength(edge4)
-
-        # TFI(edge1, edge3, edge2, edge4)
+        database.edge1['sum_arclength'], database.edge1['arclength_ratio'] = cal_arclength(database.edge1)
 
 
+        database.edge2['node'] = Vinokur_Distribution(database.edge_2_list[0], 0.02, 0.1, 31)
+        database.edge2['node'] = np.hstack((database.edge2['node'][:, :-1], Vinokur_Distribution(database.edge_2_list[1], 0.1, 0.1, 41) ))
+        database.edge2['node'] = np.hstack((database.edge2['node'][:, :-1], Vinokur_Distribution(database.edge_2_list[2], 0.1, 0.04, 31) ))
+        database.edge2['node'] = np.hstack((database.edge2['node'][:, :-1], Vinokur_Distribution(database.edge_2_list[3], 0.05, 0.5, 25) ))
+        database.edge2['sum_arclength'], database.edge2['arclength_ratio'] = cal_arclength(database.edge2)
 
-    #     x_ = np.linspace(0, self.Lx, self.nx)
-
-    #     if self.dim == 1:
-    #         y_ = np.linspace(0, 1, 1)
-    #     else:
-    #         y_ = np.linspace(0, self.Ly, self.ny)
-
-    #     if self.dim == 1 or self.dim == 2:
-    #         z_ = np.linspace(0, 1, 1)
-    #     else:
-    #         z_ = np.linspace(0, self.Lz, self.nz)
+        database.edge3['node'] = Vinokur_Distribution(database.edge_3_list[0], 0.01, 0.4, 21)
+        database.edge3['sum_arclength'], database.edge3['arclength_ratio'] = cal_arclength(database.edge3)
 
 
-    #     self.X, self.Y, self.Z = np.meshgrid(x_, y_, z_, indexing='ij')
+        database.edge4['node'] = Vinokur_Distribution(database.edge_4_list[0], 0.1, 0.3, 16)
+        database.edge4['node'] = np.hstack((database.edge4['node'][:, :-1], Vinokur_Distribution(database.edge_4_list[1], 0.3, 0.1, 16) ))
+        database.edge4['node'] = np.hstack((database.edge4['node'][:, :-1], Vinokur_Distribution(database.edge_4_list[2], 0.1, 0.1, 41) ))
+        database.edge4['node'] = np.hstack((database.edge4['node'][:, :-1], Vinokur_Distribution(database.edge_4_list[3], 0.1, 0.05, 31) ))
+        database.edge4['node'] = np.hstack((database.edge4['node'][:, :-1], Vinokur_Distribution(database.edge_4_list[4], 0.05, 0.5, 25) ))
+        database.edge4['sum_arclength'], database.edge4['arclength_ratio'] = cal_arclength(database.edge4)
 
-    #     assert np.all(self.X[:,0,0] == x_)
-    #     assert np.all(self.Y[0,:,0] == y_)
-    #     assert np.all(self.Z[0,0,:] == z_)
+        self.X, self.Y, self.Z = TFI(database.edge1, database.edge3, database.edge2, database.edge4)
+        self.node_number = self.X.shape[0]*self.X.shape[1]*self.X.shape[2]
 
+        if self.X.shape[1] == 1 and self.X.shape[2] == 1:
+            self.dim = 1
+        elif self.X.shape[2] == 1:   
+            self.dim = 2
+        else:
+            self.dim = 3
 
-    #     self.X_flatten = np.reshape(self.X, self.node_number, order='F')
-    #     self.Y_flatten = np.reshape(self.Y, self.node_number, order='F')
-    #     self.Z_flatten = np.reshape(self.Z, self.node_number, order='F')
+        self.X_flatten = np.reshape(self.X, self.node_number, order='F')
+        self.Y_flatten = np.reshape(self.Y, self.node_number, order='F')
+        self.Z_flatten = np.reshape(self.Z, self.node_number, order='F')
 
-    #     self.mesh_size = self.X.shape
+        self.mesh_size = self.X.shape
         
-    #     print ('normal mesh (nx,ny,nz) = ({}) is created'.format(self.mesh_size) )
+        print ('normal mesh (nx,ny,nz) = ({}) is created'.format(self.mesh_size) )
 
 
-    # def get_node_index_list(self, i_front = False, i_end = False
-    #                             , j_front = False, j_end = False
-    #                             , k_front = False, k_end = False
-    #                             , interior = False, inverse = False):
-    #     '''
-    #     i_front, i_end, j_front, j_end, k_front, k_end, interior, if not define then return all
-    #     '''
+    def get_node_index_list(self, i_front = False, i_end = False
+                                , j_front = False, j_end = False
+                                , k_front = False, k_end = False
+                                , interior = False, inverse = False):
+        '''
+        i_front, i_end, j_front, j_end, k_front, k_end, interior, if not define then return all
+        '''
         
-    #     index_list = np.array([], dtype=int)
-    #     node_num_list =  np.zeros(self.mesh_size)
+        index_list = np.array([], dtype=int)
+        node_num_list =  np.zeros(self.mesh_size)
 
-    #     if i_front == True:
-    #         node_num_list[0,:,:] = 1 
+        if i_front == True:
+            node_num_list[0,:,:] = 1 
 
-    #     if i_end == True:
-    #         node_num_list[-1,:,:] = 1 
+        if i_end == True:
+            node_num_list[-1,:,:] = 1 
 
-    #     if j_front == True:
-    #        node_num_list[:,0,:] = 1 
+        if j_front == True:
+           node_num_list[:,0,:] = 1 
 
-    #     if j_end == True:
-    #         node_num_list[:,-1,:] = 1 
+        if j_end == True:
+            node_num_list[:,-1,:] = 1 
 
-    #     if k_front == True:
-    #         node_num_list[:,:,0] = 1 
+        if k_front == True:
+            node_num_list[:,:,0] = 1 
 
-    #     if k_end == True:
-    #         node_num_list[:,:,-1] = 1 
+        if k_end == True:
+            node_num_list[:,:,-1] = 1 
 
-    #     node_num_list = np.reshape(node_num_list, self.node_number, order='F') 
-    #     i_bool = np.where(node_num_list == 1)
-    #     index_list = np.append(index_list, i_bool)
+        node_num_list = np.reshape(node_num_list, self.node_number, order='F') 
+        i_bool = np.where(node_num_list == 1)
+        index_list = np.append(index_list, i_bool)
 
-    #     if inverse == True:
-    #         return np.setdiff1d(np.arange(self.node_number), index_list) 
-    #     else:
-    #         return index_list
+        if inverse == True:
+            return np.setdiff1d(np.arange(self.node_number), index_list) 
+        else:
+            return index_list
             
 
             
 
-    # def plot_grid(self, BCtype=False):
+    def plot_grid(self, BCtype=False):
 
-    #     fig = plt.figure()
-    #     ax = fig.add_subplot(111, projection='3d')
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
 
-    #     marker_size = 50
+        marker_size = 50
 
-    #     if BCtype is False:
-    #         ax.scatter(self.X_flatten, self.Y_flatten, self.Z_flatten, marker='o', c='g', s = marker_size, label = 'nodes')
+        if BCtype is False:
+            ax.scatter(self.X_flatten, self.Y_flatten, self.Z_flatten, marker='o', c='g', s = marker_size, label = 'nodes')
 
-    #     else:
-    #         for nodetype in set(BCtype):
+        else:
+            for nodetype in set(BCtype):
                 
-    #             mask = np.ma.masked_where(BCtype!=nodetype, BCtype)
+                mask = np.ma.masked_where(BCtype!=nodetype, BCtype)
 
-    #             ax.scatter(np.ma.masked_array(self.X_flatten, mask.mask),
-    #                         np.ma.masked_array(self.Y_flatten, mask.mask),
-    #                         np.ma.masked_array(self.Z_flatten, mask.mask),
-    #                         marker='o', s = marker_size, label = 'nodetype: {}'.format(int(nodetype)))
+                ax.scatter(np.ma.masked_array(self.X_flatten, mask.mask),
+                            np.ma.masked_array(self.Y_flatten, mask.mask),
+                            np.ma.masked_array(self.Z_flatten, mask.mask),
+                            marker='o', s = marker_size, label = 'nodetype: {}'.format(int(nodetype)))
 
 
-    #     plt.legend()
-    #     plt.axis('equal')
-    #     plt.show()
+        plt.legend()
+        plt.axis('equal')
+        plt.show()
 
 
 

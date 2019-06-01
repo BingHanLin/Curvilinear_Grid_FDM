@@ -7,7 +7,7 @@ import numpy as np
 from Geometry.RectangularMesh import RectangularMesh
 from DiscreteSchemes.OperatorFDM3D import OperatorFDM3D
 from DiscreteSchemes.CalCoeff import CalCoeff
-from Solver.Laplace_rectangular3D import SolverLaplace, NodeType
+from Solver.Laplace_UserDataBaseMesh import SolverLaplace, NodeType
 # ===============================================================
 # Setting Parameters
 # ===============================================================
