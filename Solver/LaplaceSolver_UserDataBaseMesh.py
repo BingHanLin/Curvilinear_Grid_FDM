@@ -12,9 +12,10 @@ from mpl_toolkits.mplot3d import Axes3D
 class NodeType(enum.IntEnum):
     INTERIOR = 0
     TOPWALL = 1
-    BOTTOMWALL = 2    
-    INFLOW = 3
-    OUTFLOW = 4
+    BOTTOMWALL_1 = 2
+    BOTTOMWALL_2 = 3    
+    INFLOW = 4
+    OUTFLOW = 5
 
 class SolverLaplace:
 
@@ -36,17 +37,86 @@ class SolverLaplace:
 
         self._SystemMatrix = sp.csr_matrix(
                               self._Opertor.der_2('i').multiply(self._CCoeff.get_inv_metric_tensor(0,0)) + \
-                              self._Opertor.der_2('j').multiply(self._CCoeff.get_inv_metric_tensor(1,1))
-                               )
-
-        temp_matrix  = self._Opertor.no_operation()
-
-        self._Opertor.csr_zero_rows(  self._SystemMatrix, np.where(self._BCtype == NodeType.DIRICHLET))
-        self._Opertor.csr_zero_rows( temp_matrix, np.where(self._BCtype != NodeType.DIRICHLET))
-    
+                              self._Opertor.der_2('j').multiply(self._CCoeff.get_inv_metric_tensor(1,1)) + \
+                              2*self._Opertor.der_11('ij').multiply(self._CCoeff.get_inv_metric_tensor(1,2)) - \
+                              self._Opertor.der_1('i').multiply( self._CCoeff.get_inv_metric_tensor(0,0) * self._CCoeff.get_christoffel_symbol(0,0,0)) - \
+                              self._Opertor.der_1('j').multiply( self._CCoeff.get_inv_metric_tensor(0,0) * self._CCoeff.get_christoffel_symbol(1,0,0)) - \
+                              self._Opertor.der_1('i').multiply( self._CCoeff.get_inv_metric_tensor(1,1) * self._CCoeff.get_christoffel_symbol(0,1,1)) - \
+                              self._Opertor.der_1('j').multiply( self._CCoeff.get_inv_metric_tensor(1,1) * self._CCoeff.get_christoffel_symbol(1,1,1)) - \
+                              self._Opertor.der_1('i').multiply( self._CCoeff.get_inv_metric_tensor(0,1) * self._CCoeff.get_christoffel_symbol(0,0,1)) - \
+                              self._Opertor.der_1('j').multiply( self._CCoeff.get_inv_metric_tensor(0,1) * self._CCoeff.get_christoffel_symbol(1,0,1))
+                                )
         
-        self._SystemMatrix = self._SystemMatrix + temp_matrix
-        
+        self._Opertor.csr_zero_rows( self._SystemMatrix, np.where( self._BCtype != NodeType.INTERIOR ))
+
+        # INFLOW(NEUMANN)
+        outter_norm  = self._CCoeff.get_con_basis(1) / np.linalg.norm(self._CCoeff.get_con_basis(1), axis=1)[:,None]
+        print (outter_norm[np.where(self._BCtype == NodeType.INFLOW)])
+        temp_matrix1 = (
+        self._Opertor.der_1('i').transpose().multiply( self._CCoeff.get_inv_metric_tensor(0,0)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(0),outter_norm)).transpose() +
+        self._Opertor.der_1('i').transpose().multiply( self._CCoeff.get_inv_metric_tensor(1,0)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(1),outter_norm)).transpose() +
+        self._Opertor.der_1('i').transpose().multiply( self._CCoeff.get_inv_metric_tensor(2,0)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(2),outter_norm)).transpose() +
+        self._Opertor.der_1('j').transpose().multiply( self._CCoeff.get_inv_metric_tensor(0,1)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(0),outter_norm)).transpose() +
+        self._Opertor.der_1('j').transpose().multiply( self._CCoeff.get_inv_metric_tensor(1,1)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(1),outter_norm)).transpose() +
+        self._Opertor.der_1('j').transpose().multiply( self._CCoeff.get_inv_metric_tensor(2,1)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(2),outter_norm)).transpose() 
+        )
+
+        # OUTFLOW(NEUMANN)
+        outter_norm  = self._CCoeff.get_con_basis(0) / np.linalg.norm(self._CCoeff.get_con_basis(0), axis=1)[:,None]
+
+        temp_matrix2 = (
+        self._Opertor.der_1('i').transpose().multiply( self._CCoeff.get_inv_metric_tensor(0,0)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(0),outter_norm)).transpose() +
+        self._Opertor.der_1('i').transpose().multiply( self._CCoeff.get_inv_metric_tensor(1,0)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(1),outter_norm)).transpose() +
+        self._Opertor.der_1('i').transpose().multiply( self._CCoeff.get_inv_metric_tensor(2,0)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(2),outter_norm)).transpose() +
+        self._Opertor.der_1('j').transpose().multiply( self._CCoeff.get_inv_metric_tensor(0,1)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(0),outter_norm)).transpose() +
+        self._Opertor.der_1('j').transpose().multiply( self._CCoeff.get_inv_metric_tensor(1,1)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(1),outter_norm)).transpose() +
+        self._Opertor.der_1('j').transpose().multiply( self._CCoeff.get_inv_metric_tensor(2,1)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(2),outter_norm)).transpose() 
+        )
+
+        # BOTTOMWALL_1(NEUMANN)
+        outter_norm  = -self._CCoeff.get_con_basis(0) / np.linalg.norm(self._CCoeff.get_con_basis(0), axis=1)[:,None]
+
+        temp_matrix3 = (
+        self._Opertor.der_1('i').transpose().multiply( self._CCoeff.get_inv_metric_tensor(0,0)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(0),outter_norm)).transpose() +
+        self._Opertor.der_1('i').transpose().multiply( self._CCoeff.get_inv_metric_tensor(1,0)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(1),outter_norm)).transpose() +
+        self._Opertor.der_1('i').transpose().multiply( self._CCoeff.get_inv_metric_tensor(2,0)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(2),outter_norm)).transpose() +
+        self._Opertor.der_1('j').transpose().multiply( self._CCoeff.get_inv_metric_tensor(0,1)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(0),outter_norm)).transpose() +
+        self._Opertor.der_1('j').transpose().multiply( self._CCoeff.get_inv_metric_tensor(1,1)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(1),outter_norm)).transpose() +
+        self._Opertor.der_1('j').transpose().multiply( self._CCoeff.get_inv_metric_tensor(2,1)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(2),outter_norm)).transpose() 
+        )
+
+        # BOTTOMWALL_2(NEUMANN)
+        outter_norm  = -self._CCoeff.get_con_basis(1) / np.linalg.norm(self._CCoeff.get_con_basis(1), axis=1)[:,None]
+
+        temp_matrix4 = (
+        self._Opertor.der_1('i').transpose().multiply( self._CCoeff.get_inv_metric_tensor(0,0)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(0),outter_norm)).transpose() +
+        self._Opertor.der_1('i').transpose().multiply( self._CCoeff.get_inv_metric_tensor(1,0)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(1),outter_norm)).transpose() +
+        self._Opertor.der_1('i').transpose().multiply( self._CCoeff.get_inv_metric_tensor(2,0)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(2),outter_norm)).transpose() +
+        self._Opertor.der_1('j').transpose().multiply( self._CCoeff.get_inv_metric_tensor(0,1)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(0),outter_norm)).transpose() +
+        self._Opertor.der_1('j').transpose().multiply( self._CCoeff.get_inv_metric_tensor(1,1)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(1),outter_norm)).transpose() +
+        self._Opertor.der_1('j').transpose().multiply( self._CCoeff.get_inv_metric_tensor(2,1)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(2),outter_norm)).transpose() 
+        )
+
+        # TOPWALL(NEUMANN)
+        outter_norm  = self._CCoeff.get_con_basis(1) / np.linalg.norm(self._CCoeff.get_con_basis(1), axis=1)[:,None]
+
+        temp_matrix5 = (
+        self._Opertor.der_1('i').transpose().multiply( self._CCoeff.get_inv_metric_tensor(0,0)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(0),outter_norm)).transpose() +
+        self._Opertor.der_1('i').transpose().multiply( self._CCoeff.get_inv_metric_tensor(1,0)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(1),outter_norm)).transpose() +
+        self._Opertor.der_1('i').transpose().multiply( self._CCoeff.get_inv_metric_tensor(2,0)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(2),outter_norm)).transpose() +
+        self._Opertor.der_1('j').transpose().multiply( self._CCoeff.get_inv_metric_tensor(0,1)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(0),outter_norm)).transpose() +
+        self._Opertor.der_1('j').transpose().multiply( self._CCoeff.get_inv_metric_tensor(1,1)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(1),outter_norm)).transpose() +
+        self._Opertor.der_1('j').transpose().multiply( self._CCoeff.get_inv_metric_tensor(2,1)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(2),outter_norm)).transpose() 
+        )
+
+        self._Opertor.csr_zero_rows( temp_matrix1, np.where( (self._BCtype != NodeType.INFLOW)))
+        self._Opertor.csr_zero_rows( temp_matrix2, np.where( (self._BCtype != NodeType.OUTFLOW)))
+        self._Opertor.csr_zero_rows( temp_matrix3, np.where( (self._BCtype != NodeType.BOTTOMWALL_1)))
+        self._Opertor.csr_zero_rows( temp_matrix4, np.where( (self._BCtype != NodeType.BOTTOMWALL_2)))
+        self._Opertor.csr_zero_rows( temp_matrix5, np.where( (self._BCtype != NodeType.TOPWALL)))
+
+        self._SystemMatrix = self._SystemMatrix + temp_matrix1 + temp_matrix2 + temp_matrix3 + temp_matrix4 + temp_matrix5
+
         print ('System matrix is created')
 
     # # ============================================
@@ -65,12 +135,11 @@ class SolverLaplace:
     # ============================================
     def start_solve(self):
         
-        B = np.zeros_like(self._Mesh.X)
-        B[-1,:,:] = 100
-        B = self.flatten(B)
+        B = np.zeros_like(self._Mesh.X_flatten)
+        B[np.where( (self._BCtype == NodeType.INFLOW))] = 5.0
+        B[np.where( (self._BCtype == NodeType.OUTFLOW))] = 1.0
 
         self._Phi = lgmres(self._SystemMatrix, B)[0]
-
 
         fig = plt.figure()
         ax = fig.add_subplot(111, projection='3d')

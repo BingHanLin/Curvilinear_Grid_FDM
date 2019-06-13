@@ -28,11 +28,11 @@ myCoeff = CalCoeff(myMesh)
 # define boundary type
 BCtype = np.zeros_like(myMesh.X_flatten)
 
-
-BCtype[myMesh.get_node_index_list(i_front = True)] = NodeType.INFLOW
+BCtype[myMesh.get_node_index_list(i_front = True)] = NodeType.BOTTOMWALL_1
+BCtype[myMesh.get_node_index_list(j_front = True)] = NodeType.BOTTOMWALL_2
+BCtype[myMesh.get_node_index_list(j_end = True)] = NodeType.TOPWALL
+BCtype[myMesh.get_node_index_list(j_end = True)[:16]] = NodeType.INFLOW
 BCtype[myMesh.get_node_index_list(i_end = True)] = NodeType.OUTFLOW
-BCtype[myMesh.get_node_index_list(j_front = True)] = NodeType.TOPWALL
-BCtype[myMesh.get_node_index_list(j_end = True)] = NodeType.BOTTOMWALL
 
 # # ===============================================================
 # # Biuld model for simulation
@@ -50,4 +50,4 @@ myMesh.plot_grid(BCtype)
 # create solver
 mySolver = SolverLaplace(myMesh, myCoeff, BCtype, OperatorFDM3D, dir_name)
 
-mySolver.start_solve()
+# mySolver.start_solve()
