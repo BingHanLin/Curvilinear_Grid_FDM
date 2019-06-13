@@ -11,8 +11,10 @@ from mpl_toolkits.mplot3d import Axes3D
 
 class NodeType(enum.IntEnum):
     INTERIOR = 0
-    DIRICHLET = 1
-    
+    TOPWALL = 1
+    BOTTOMWALL = 2    
+    INFLOW = 3
+    OUTFLOW = 4
 
 class SolverLaplace:
 

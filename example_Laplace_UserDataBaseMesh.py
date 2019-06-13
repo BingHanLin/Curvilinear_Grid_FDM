@@ -4,10 +4,11 @@ http://www.mathematik.uni-dortmund.de/~kuzmin/cfdintro/lecture4.pdf
 import os
 import shutil
 import numpy as np
-from Geometry.UserDataBaseMesh import UserDataBaseMesh, DataBase
-from DiscreteSchemes.OperatorFDM3D import OperatorFDM3D
-from DiscreteSchemes.CalCoeff import CalCoeff
+
+from CUR_GRID_FDM.DiscreteSchemes import OperatorFDM3D, CalCoeff
+from CUR_GRID_FDM.Geometry import UserDataBaseMesh, DataBase
 from Solver.LaplaceSolver_UserDataBaseMesh import SolverLaplace, NodeType
+
 # ===============================================================
 # Setting Parameters
 # ===============================================================
@@ -27,7 +28,11 @@ myCoeff = CalCoeff(myMesh)
 # define boundary type
 BCtype = np.zeros_like(myMesh.X_flatten)
 
-BCtype[myMesh.get_node_index_list(i_front = True,i_end = True, j_front = True ,j_end = True)] = NodeType.DIRICHLET
+
+BCtype[myMesh.get_node_index_list(i_front = True)] = NodeType.INFLOW
+BCtype[myMesh.get_node_index_list(i_end = True)] = NodeType.OUTFLOW
+BCtype[myMesh.get_node_index_list(j_front = True)] = NodeType.TOPWALL
+BCtype[myMesh.get_node_index_list(j_end = True)] = NodeType.BOTTOMWALL
 
 # # ===============================================================
 # # Biuld model for simulation

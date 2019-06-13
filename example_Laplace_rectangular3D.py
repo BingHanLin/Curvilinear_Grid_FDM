@@ -4,10 +4,11 @@ http://www.mathematik.uni-dortmund.de/~kuzmin/cfdintro/lecture4.pdf
 import os
 import shutil
 import numpy as np
-from Geometry.RectangularMesh import RectangularMesh
-from DiscreteSchemes.OperatorFDM3D import OperatorFDM3D
-from DiscreteSchemes.CalCoeff import CalCoeff
-from Solver.Laplace_UserDataBaseMesh import SolverLaplace, NodeType
+
+from CUR_GRID_FDM.DiscreteSchemes import OperatorFDM3D, CalCoeff
+from CUR_GRID_FDM.Geometry import RectangularMesh
+from Solver.Laplace_rectangular3D import SolverLaplace, NodeType
+
 # ===============================================================
 # Setting Parameters
 # ===============================================================

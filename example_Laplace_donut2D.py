@@ -4,9 +4,9 @@ http://www.mathematik.uni-dortmund.de/~kuzmin/cfdintro/lecture4.pdf
 import os 
 import shutil
 import numpy as np
-from Geometry.DonutMesh import DonutMesh
-from DiscreteSchemes.OperatorFDM3D import OperatorFDM3D
-from DiscreteSchemes.CalCoeff import CalCoeff
+
+from CUR_GRID_FDM.DiscreteSchemes import OperatorFDM3D, CalCoeff
+from CUR_GRID_FDM.Geometry import DonutMesh
 from Solver.LaplaceSolver_donut2D import SolverLaplace, NodeType
 
 # ===============================================================
