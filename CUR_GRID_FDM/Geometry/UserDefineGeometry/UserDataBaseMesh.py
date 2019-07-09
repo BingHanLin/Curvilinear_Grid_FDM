@@ -131,10 +131,10 @@ class UserDataBaseMesh:
 
     def __init__(self, database):
 
-        self.__create_grid(database)
+        self._create_grid(database)
 
 
-    def __create_grid(self, database):
+    def _create_grid(self, database):
 
 
         database.edge1['node'] = Vinokur_Distribution(database.edge_1_list[0], 0.01, 0.4, 21)

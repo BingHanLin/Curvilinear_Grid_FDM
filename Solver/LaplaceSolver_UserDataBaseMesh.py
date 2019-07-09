@@ -51,7 +51,7 @@ class SolverLaplace:
 
         # INFLOW(NEUMANN)
         outter_norm  = self._CCoeff.get_con_basis(1) / np.linalg.norm(self._CCoeff.get_con_basis(1), axis=1)[:,None]
-        print (outter_norm[np.where(self._BCtype == NodeType.INFLOW)])
+        
         temp_matrix1 = (
         self._Opertor.der_1('i').transpose().multiply( self._CCoeff.get_inv_metric_tensor(0,0)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(0),outter_norm)).transpose() +
         self._Opertor.der_1('i').transpose().multiply( self._CCoeff.get_inv_metric_tensor(1,0)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(1),outter_norm)).transpose() +

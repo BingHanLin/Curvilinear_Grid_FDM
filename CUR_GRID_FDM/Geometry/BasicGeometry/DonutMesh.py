@@ -26,10 +26,10 @@ class DonutMesh:
 
         self.node_number =  self.n_theta* self.n_radius*self.nz
 
-        self.__create_grid()
+        self._create_grid()
 
 
-    def __create_grid(self):
+    def _create_grid(self):
 
         radius_ = np.linspace(self.R_inner, self.R_outer, self.n_radius)
         theta_ = np.linspace(0, 2*np.pi-2*np.pi/self.n_theta, self.n_theta)

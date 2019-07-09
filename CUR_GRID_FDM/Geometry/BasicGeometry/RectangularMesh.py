@@ -32,10 +32,10 @@ class RectangularMesh:
 
         self.node_number =  self.nx*self.ny*self.nz
 
-        self.__create_grid()
+        self._create_grid()
 
 
-    def __create_grid(self):
+    def _create_grid(self):
 
         x_ = np.linspace(0, self.Lx, self.nx)
 

@@ -9,6 +9,7 @@ class CalCoeff:
 
         self._MESH = Mesh
         self.update_Coeff()
+        self._cal_out_norm()
 
     def update_Coeff(self):
 
@@ -122,6 +123,15 @@ class CalCoeff:
 
         # print (self._christoffel_symbol)
 
+    def _cal_out_norm(self):
+
+        self._MESH.out_norm = np.zeros((self._MESH.mesh_size + (3,)))
+        print ( self._con_basis_1[...,:])
+        print ( np.linalg.norm(self._con_basis_1[...,:], axis=-1)[:,None])
+        print ( self._con_basis_1[...,:]/np.linalg.norm(self._con_basis_1[...,:], axis=-1)[:,None] ) 
+
+        # self._MESH.out_norm[0, :, :, :] = self._con_basis_1[...,:]
+        # # -self.get_con_basis(0) / np.linalg.norm(self.get_con_basis(0), axis=1)[:,None]
 
     def get_co_basis(self, idx):
 
@@ -143,7 +153,6 @@ class CalCoeff:
             return np.reshape(self._con_basis_3[...,:], (self._MESH.node_number,3), order='F')
         
 
-
     def get_metric_tensor(self, idx1, idx2):
 
         return np.reshape(self._metric_tensor[...,idx1, idx2], self._MESH.node_number, order='F') 
@@ -157,4 +166,3 @@ class CalCoeff:
     def get_christoffel_symbol(self, idx1, idx2, idx3):
 
         return np.reshape(self._christoffel_symbol[...,idx1, idx2, idx3], self._MESH.node_number, order='F')  
-
