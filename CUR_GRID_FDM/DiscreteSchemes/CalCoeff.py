@@ -126,12 +126,20 @@ class CalCoeff:
     def _cal_out_norm(self):
 
         self._MESH.out_norm = np.zeros((self._MESH.mesh_size + (3,)))
-        print ( self._con_basis_1[...,:])
-        print ( np.linalg.norm(self._con_basis_1[...,:], axis=-1)[:,None])
-        print ( self._con_basis_1[...,:]/np.linalg.norm(self._con_basis_1[...,:], axis=-1)[:,None] ) 
 
-        # self._MESH.out_norm[0, :, :, :] = self._con_basis_1[...,:]
-        # # -self.get_con_basis(0) / np.linalg.norm(self.get_con_basis(0), axis=1)[:,None]
+        if self._MESH.mesh_size[0] > 2:
+            self._MESH.out_norm[ 0,:,:,:] = -self._con_basis_1[ 0,:,:,:] / np.linalg.norm(self._con_basis_1[ 0,:,:,:], axis= -1 )[...,None]
+            self._MESH.out_norm[-1,:,:,:] =  self._con_basis_1[-1,:,:,:] / np.linalg.norm(self._con_basis_1[-1,:,:,:], axis= -1 )[...,None]
+        
+        if self._MESH.mesh_size[1] > 2:
+            self._MESH.out_norm[:,0,:,:] = -self._con_basis_2[:,0,:,:] / np.linalg.norm(self._con_basis_2[:,0,:,:], axis= -1 )[...,None]
+            self._MESH.out_norm[:,-1,:,:] = self._con_basis_2[:,-1,:,:] / np.linalg.norm(self._con_basis_2[:,-1,:,:], axis= -1 )[...,None]
+        
+        if self._MESH.mesh_size[2] > 2:
+            self._MESH.out_norm[:,:, 0,:] = -self._con_basis_3[:,:,0,:] / np.linalg.norm(self._con_basis_3[:,:,0,:], axis= -1 )[...,None]
+            self._MESH.out_norm[:,:,-1,:] =  self._con_basis_3[:,:,-1,:] / np.linalg.norm(self._con_basis_3[:,:,-1,:], axis= -1 )[...,None]
+
+        print (self._MESH.out_norm)
 
     def get_co_basis(self, idx):
 

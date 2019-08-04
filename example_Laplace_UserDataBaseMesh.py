@@ -47,9 +47,7 @@ else:
 
 myMesh.plot_grid(BCtype)
 
-# print (myMesh.out_norm[0, :, :, :])
-
 # create solver
-# mySolver = SolverLaplace(myMesh, myCoeff, BCtype, OperatorFDM3D, dir_name)
+mySolver = SolverLaplace(myMesh, myCoeff, BCtype, OperatorFDM3D, dir_name)
 
-# mySolver.start_solve()
+mySolver.start_solve()
