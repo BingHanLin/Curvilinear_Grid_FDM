@@ -139,7 +139,9 @@ class CalCoeff:
             self._MESH.out_norm[:,:, 0,:] = -self._con_basis_3[:,:,0,:] / np.linalg.norm(self._con_basis_3[:,:,0,:], axis= -1 )[...,None]
             self._MESH.out_norm[:,:,-1,:] =  self._con_basis_3[:,:,-1,:] / np.linalg.norm(self._con_basis_3[:,:,-1,:], axis= -1 )[...,None]
 
-        print (self._MESH.out_norm)
+        self._MESH.out_norm = np.reshape(self._MESH.out_norm, (self._MESH.X_flatten.shape + (3,)) , order='F')
+        print ((self._MESH.X_flatten.shape + (3,)))
+        print (self._MESH.out_norm.shape)
 
     def get_co_basis(self, idx):
 

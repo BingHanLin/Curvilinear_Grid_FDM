@@ -17,7 +17,7 @@ class NodeType(enum.IntEnum):
 
     
 # http://mragheb.com/NPRE%20498MC%20Monte%20Carlo%20Simulations%20in%20Engineering/Mixed%20Boundary%20Value%20Problems.pdf
-
+# http://folk.ntnu.no/leifh/teaching/tkt4140/._main056.html
 class SolverLaplace:
 
     def __init__(self, MMesh, CCoeff, BBCtype, OOperatorFDM3D, ddir_name):
@@ -53,37 +53,19 @@ class SolverLaplace:
         temp_matrix1  = self._Opertor.no_operation()
         self._Opertor.csr_zero_rows( temp_matrix1, np.where(self._BCtype != NodeType.DIRICHLET))
 
-    
         # NEUMANN
-        outter_norm  = self._CCoeff.get_con_basis(0) / np.linalg.norm(self._CCoeff.get_con_basis(0), axis=1)[:,None]
-
         temp_matrix2 = (
-        self._Opertor.der_1('i').transpose().multiply( self._CCoeff.get_inv_metric_tensor(0,0)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(0),outter_norm)).transpose() +
-        self._Opertor.der_1('i').transpose().multiply( self._CCoeff.get_inv_metric_tensor(1,0)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(1),outter_norm)).transpose() +
-        self._Opertor.der_1('i').transpose().multiply( self._CCoeff.get_inv_metric_tensor(2,0)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(2),outter_norm)).transpose() +
-        self._Opertor.der_1('j').transpose().multiply( self._CCoeff.get_inv_metric_tensor(0,1)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(0),outter_norm)).transpose() +
-        self._Opertor.der_1('j').transpose().multiply( self._CCoeff.get_inv_metric_tensor(1,1)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(1),outter_norm)).transpose() +
-        self._Opertor.der_1('j').transpose().multiply( self._CCoeff.get_inv_metric_tensor(2,1)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(2),outter_norm)).transpose() 
+        self._Opertor.der_1('i').transpose().multiply( self._CCoeff.get_inv_metric_tensor(0,0)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(0),self._Mesh.out_norm)).transpose() +
+        self._Opertor.der_1('i').transpose().multiply( self._CCoeff.get_inv_metric_tensor(1,0)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(1),self._Mesh.out_norm)).transpose() +
+        self._Opertor.der_1('i').transpose().multiply( self._CCoeff.get_inv_metric_tensor(2,0)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(2),self._Mesh.out_norm)).transpose() +
+        self._Opertor.der_1('j').transpose().multiply( self._CCoeff.get_inv_metric_tensor(0,1)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(0),self._Mesh.out_norm)).transpose() +
+        self._Opertor.der_1('j').transpose().multiply( self._CCoeff.get_inv_metric_tensor(1,1)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(1),self._Mesh.out_norm)).transpose() +
+        self._Opertor.der_1('j').transpose().multiply( self._CCoeff.get_inv_metric_tensor(2,1)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(2),self._Mesh.out_norm)).transpose() 
         )
 
-        outter_norm  = (-self._CCoeff.get_con_basis(1) / np.linalg.norm(self._CCoeff.get_con_basis(1), axis=1)[:,None])
+        self._Opertor.csr_zero_rows( temp_matrix2, np.where(self._BCtype != NodeType.NEUMANN))
 
-        temp_matrix3 = (
-        self._Opertor.der_1('i').transpose().multiply( self._CCoeff.get_inv_metric_tensor(0,0)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(0),outter_norm)).transpose() +
-        self._Opertor.der_1('i').transpose().multiply( self._CCoeff.get_inv_metric_tensor(1,0)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(1),outter_norm)).transpose() +
-        self._Opertor.der_1('i').transpose().multiply( self._CCoeff.get_inv_metric_tensor(2,0)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(2),outter_norm)).transpose() +
-        self._Opertor.der_1('j').transpose().multiply( self._CCoeff.get_inv_metric_tensor(0,1)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(0),outter_norm)).transpose() +
-        self._Opertor.der_1('j').transpose().multiply( self._CCoeff.get_inv_metric_tensor(1,1)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(1),outter_norm)).transpose() +
-        self._Opertor.der_1('j').transpose().multiply( self._CCoeff.get_inv_metric_tensor(2,1)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(2),outter_norm)).transpose() 
-        )
-
-        # be careful of the intersection of two boudnary
-        self._Opertor.csr_zero_rows( temp_matrix2, np.where( (self._Mesh.X_flatten != 0)))
-        self._Opertor.csr_zero_rows( temp_matrix2, np.where( (self._Mesh.X_flatten == 0) & (self._Mesh.Y_flatten == 0) ))
-        self._Opertor.csr_zero_rows( temp_matrix3, np.where( (self._Mesh.Y_flatten != 0)))
-
-
-        self._SystemMatrix = self._SystemMatrix + temp_matrix1 + temp_matrix2 + temp_matrix3
+        self._SystemMatrix = self._SystemMatrix + temp_matrix1 + temp_matrix2
 
         print ('System matrix is created')
 

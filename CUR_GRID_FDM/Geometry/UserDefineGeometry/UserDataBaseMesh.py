@@ -238,7 +238,7 @@ class UserDataBaseMesh:
                             np.ma.masked_array(self.Z_flatten, mask.mask),
                             marker='o', s = marker_size, label = 'nodetype: {}'.format(int(nodetype)))
 
-                ax.quiver(self.X, self.Y, self.Z, self.out_norm[:,:, :,0], self.out_norm[:,:, :,1], self.out_norm[:,:, :,2], 
+                ax.quiver(self.X_flatten, self.Y_flatten, self.Z_flatten, self.out_norm[:,0], self.out_norm[:,1], self.out_norm[:,2], 
                           length=0.5, normalize=True)
 
 
