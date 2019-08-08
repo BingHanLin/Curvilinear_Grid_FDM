@@ -14,7 +14,6 @@ class NodeType(enum.IntEnum):
     INTERIOR = 0
     DIRICHLET = 1
     NEUMANN = 2
-
     
 # http://mragheb.com/NPRE%20498MC%20Monte%20Carlo%20Simulations%20in%20Engineering/Mixed%20Boundary%20Value%20Problems.pdf
 # http://folk.ntnu.no/leifh/teaching/tkt4140/._main056.html
