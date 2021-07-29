@@ -134,7 +134,7 @@ class CurveRectangularMesh:
 
 
         plt.legend()
-        plt.axis('equal')
+        plt.axis('auto')
         plt.show()
 
 
