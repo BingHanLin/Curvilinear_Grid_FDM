@@ -13,11 +13,6 @@ class BaseMesh(abc.ABC):
     def _cal_out_norm(self):
         co_basis = np.zeros((3,) + self.mesh_size() + (3,))
 
-        print(co_basis.shape)
-        print(self.x().shape)
-        print(self.y().shape)
-        print(self.z().shape)
-
         co_basis[0, ..., 0], co_basis[1, ..., 0], co_basis[2, ..., 0] = \
             np.gradient(self.x(), axis=(0, 1, 2))
 
@@ -162,6 +157,6 @@ class BaseMesh(abc.ABC):
         ax = plt.figure().add_subplot(projection='3d')
 
         ax.quiver(self.x_flatten(), self.y_flatten(),
-                  self.z_flatten(), u, v, w, length=0.1, normalize=True)
+                  self.z_flatten(), u, v, w,  normalize=True)
 
         plt.show()

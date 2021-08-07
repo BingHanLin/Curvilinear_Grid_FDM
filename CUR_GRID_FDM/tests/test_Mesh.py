@@ -13,13 +13,12 @@ class CurveRectangularMeshTestCase(unittest.TestCase):
 
         self.assertEqual(mesh.node_number(), 10*10*5)
         self.assertEqual(mesh.mesh_size(), (10, 10, 5))
-        mesh.plot_out_norm()
 
     def test_DonutMeshInfo(self):
-        mesh = DonutMesh(1.0, 5.0, 10, 10, 1.0, 10)
+        mesh = DonutMesh(2.0, 5.0, 5, 10, 1.0, 6)
 
-        self.assertEqual(mesh.node_number(), 10*10*10)
-        self.assertEqual(mesh.mesh_size(), (10, 10, 10))
+        self.assertEqual(mesh.node_number(), 5*10*6)
+        self.assertEqual(mesh.mesh_size(), (5, 10, 6))
         mesh.plot_out_norm()
 
     def test_RectangularMeshInfo(self):
@@ -27,7 +26,6 @@ class CurveRectangularMeshTestCase(unittest.TestCase):
 
         self.assertEqual(mesh.node_number(), 4*4*4)
         self.assertEqual(mesh.mesh_size(), (4, 4, 4))
-        mesh.plot_out_norm()
 
 
 if __name__ == "__main__":
