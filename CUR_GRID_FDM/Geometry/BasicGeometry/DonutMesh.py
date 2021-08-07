@@ -4,7 +4,7 @@ import numpy as np
 
 class DonutMesh(BaseMesh):
 
-    def __init__(self, r_inner: float, r_outer: float, n_theta: int, n_radius: int, lz: int = 1, nz: int = 1):
+    def __init__(self, r_inner: float, r_outer: float, n_theta: int, n_radius: int, lz: int, nz: int):
 
         self._r_inner = r_inner
         self._r_outer = r_outer
@@ -22,15 +22,15 @@ class DonutMesh(BaseMesh):
         self._node_number = self._n_theta * self._n_radius * self._nz
         self._mesh_size = (self._n_theta, self._n_radius, self._nz)
 
-        radius = np.linspace(self._r_inner, self._r_outer, self._n_radius)
         theta = np.linspace(0, 2 * np.pi - 2 * np.pi /
                             self._n_theta, self._n_theta)
+        radius = np.linspace(self._r_inner, self._r_outer, self._n_radius)
 
         z = np.linspace(0, self._lz, self._nz)
 
-        radius_matrix, theta_matrix = np.meshgrid(radius, theta)
+        theta_matrix, radius_matrix = np.meshgrid(theta, radius)
 
-        _, _, self._z = np.meshgrid(radius, theta, z, indexing='ij')
+        _, _, self._z = np.meshgrid(theta, radius, z, indexing='ij')
 
         self._x = radius_matrix * np.cos(theta_matrix)
         self._y = radius_matrix * np.sin(theta_matrix)

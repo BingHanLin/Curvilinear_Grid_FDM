@@ -9,22 +9,25 @@ class CurveRectangularMeshTestCase(unittest.TestCase):
     # def tearDown(self):
 
     def test_CurveRectangularMeshInfo(self):
-        geom = CurveRectangularMesh(2.0, 40, 1.0, 20)
+        mesh = CurveRectangularMesh(2.0, 10, 1.0, 10, 1.0, 5)
 
-        self.assertEqual(geom.node_number(), 40*20*1)
-        self.assertEqual(geom.mesh_size(), (40, 20, 1))
+        self.assertEqual(mesh.node_number(), 10*10*5)
+        self.assertEqual(mesh.mesh_size(), (10, 10, 5))
+        mesh.plot_out_norm()
 
     def test_DonutMeshInfo(self):
-        geom = DonutMesh(5.0, 1.0, 5, 10)
+        mesh = DonutMesh(1.0, 5.0, 10, 10, 1.0, 10)
 
-        self.assertEqual(geom.node_number(), 5*10*1)
-        self.assertEqual(geom.mesh_size(), (5, 10, 1))
+        self.assertEqual(mesh.node_number(), 10*10*10)
+        self.assertEqual(mesh.mesh_size(), (10, 10, 10))
+        mesh.plot_out_norm()
 
     def test_RectangularMeshInfo(self):
-        geom = RectangularMesh(1.0, 5, 1.0, 10)
+        mesh = RectangularMesh(1.0, 4, 1.0, 4, 1.0, 4)
 
-        self.assertEqual(geom.node_number(), 5*10*1)
-        self.assertEqual(geom.mesh_size(), (5, 10, 1))
+        self.assertEqual(mesh.node_number(), 4*4*4)
+        self.assertEqual(mesh.mesh_size(), (4, 4, 4))
+        mesh.plot_out_norm()
 
 
 if __name__ == "__main__":

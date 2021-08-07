@@ -4,7 +4,7 @@ import numpy as np
 
 class CurveRectangularMesh(BaseMesh):
 
-    def __init__(self, lx: float, nx: int, ly: float = 1.0, ny: int = 1, lz: float = 1.0, nz: int = 1):
+    def __init__(self, lx: float, nx: int, ly: float, ny: int, lz: float, nz: int):
         self._lx = lx
         self._ly = ly
         self._lz = lz
