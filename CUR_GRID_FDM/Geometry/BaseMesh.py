@@ -2,6 +2,18 @@ import abc
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+from enum import IntFlag
+
+
+class NODELOC(IntFlag):
+    I_START = 1
+    I_END = 2
+    J_START = 4
+    J_END = 8
+    K_START = 16
+    K_END = 32
+    INTERIOR = 64
+    ALL = 128
 
 
 class BaseMesh(abc.ABC):
@@ -83,40 +95,49 @@ class BaseMesh(abc.ABC):
             self._cal_out_norm()
         return self._out_norm
 
-    def get_node_index_list(self, i_front=False, i_end=False, j_front=False, j_end=False, k_front=False, k_end=False, interior=False, inverse=False):
-        '''
-        i_front, i_end, j_front, j_end, k_front, k_end, interior, if not define then return all
-        '''
-
+    def get_node_index_list(self, loc: NODELOC):
         index_list = np.array([], dtype=int)
-        node_num_list = np.zeros(self._mesh_size)
+        node_num_list = np.zeros(self.mesh_size())
 
-        if i_front == True:
+        print("get_node_index_list")
+        print(node_num_list.shape)
+        if NODELOC.I_START in loc:
             node_num_list[0, :, :] = 1
+            print(node_num_list[0, :, :].shape)
 
-        if i_end == True:
+        if NODELOC.I_END in loc:
             node_num_list[-1, :, :] = 1
+            print(node_num_list[-1, :, :].shape)
 
-        if j_front == True:
+        if NODELOC.J_START in loc:
             node_num_list[:, 0, :] = 1
+            print(node_num_list[:, 0, :].shape)
 
-        if j_end == True:
+        if NODELOC.J_END in loc:
             node_num_list[:, -1, :] = 1
+            print(node_num_list[:, -1, :].shape)
 
-        if k_front == True:
+        if NODELOC.K_START in loc:
             node_num_list[:, :, 0] = 1
+            print(node_num_list[:, :, 0].shape)
 
-        if k_end == True:
+        if NODELOC.K_END in loc:
             node_num_list[:, :, -1] = 1
+            print(node_num_list[:, :, -1].shape)
 
-        node_num_list = np.reshape(node_num_list, self._node_number, order='F')
+        if NODELOC.INTERIOR in loc:
+            node_num_list[1:-1, :, 1:-1] = 1
+            print(node_num_list[1:-1, :, 1:-1].shape)
+
+        if NODELOC.ALL in loc:
+            node_num_list[:, :, :] = 1
+
+        node_num_list = np.reshape(
+            node_num_list, self.node_number(), order='F')
         i_bool = np.where(node_num_list == 1)
         index_list = np.append(index_list, i_bool)
 
-        if inverse == True:
-            return np.setdiff1d(np.arange(self._node_number), index_list)
-        else:
-            return index_list
+        return index_list
 
     def plot_grid(self, BCtype=False):
 

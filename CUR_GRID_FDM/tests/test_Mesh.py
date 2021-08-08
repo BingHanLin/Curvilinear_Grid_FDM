@@ -1,3 +1,4 @@
+from CUR_GRID_FDM.Geometry.BaseMesh import NODELOC
 import unittest
 from CUR_GRID_FDM.Geometry import CurveRectangularMesh
 from CUR_GRID_FDM.Geometry import DonutMesh
@@ -19,7 +20,6 @@ class CurveRectangularMeshTestCase(unittest.TestCase):
 
         self.assertEqual(mesh.node_number(), 5*10*6)
         self.assertEqual(mesh.mesh_size(), (5, 10, 6))
-        mesh.plot_out_norm()
 
     def test_RectangularMeshInfo(self):
         mesh = RectangularMesh(1.0, 4, 1.0, 4, 1.0, 4)
