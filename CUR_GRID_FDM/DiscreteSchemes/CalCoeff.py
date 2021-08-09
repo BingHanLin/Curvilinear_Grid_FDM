@@ -101,14 +101,11 @@ class CalCoeff:
     def get_con_basis(self, idx):
         return np.reshape(self._con_basis[idx, ..., :], (self._mesh.node_number(), 3), order='F')
 
-    # def get_metric_tensor(self, idx1, idx2):
+    def get_metric_tensor(self, idx1, idx2):
+        return np.reshape(self._metric_tensor[..., idx1, idx2], self._mesh.node_number(), order='F')
 
-    #     return np.reshape(self._metric_tensor[..., idx1, idx2], self._mesh.node_number, order='F')
+    def get_inv_metric_tensor(self, idx1, idx2):
+        return np.reshape(self._inv_metric_tensor[..., idx1, idx2], self._mesh.node_number(), order='F')
 
-    # def get_inv_metric_tensor(self, idx1, idx2):
-
-    #     return np.reshape(self._inv_metric_tensor[..., idx1, idx2], self._mesh.node_number, order='F')
-
-    # def get_christoffel_symbol(self, idx1, idx2, idx3):
-
-    #     return np.reshape(self._christoffel_symbol[..., idx1, idx2, idx3], self._mesh.node_number, order='F')
+    def get_christoffel_symbol(self, idx1, idx2, idx3):
+        return np.reshape(self._christoffel_symbol[..., idx1, idx2, idx3], self._mesh.node_number(), order='F')

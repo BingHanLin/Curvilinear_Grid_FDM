@@ -29,13 +29,15 @@ myMesh = CurveRectangularMesh(Lx, nx, Ly, ny)
 
 # # Calculate coefficients for curvilinear coordinates
 myCoeff = CalCoeff(myMesh)
+myOperator = OperatorFDM3D(myMesh)
 
 # define boundary type
 BCtype = np.zeros_like(myMesh.X_flatten)
 
-BCtype[myMesh.get_node_index_list(i_end = True, j_end = True, i_front = True, j_front = True)] = NodeType.WALL
-BCtype[myMesh.get_node_index_list(i_front = True)] = NodeType.INLET
-BCtype[myMesh.get_node_index_list(i_end = True)[10:20]] = NodeType.OUTLET
+BCtype[myMesh.get_node_index_list(
+    i_end=True, j_end=True, i_front=True, j_front=True)] = NodeType.WALL
+BCtype[myMesh.get_node_index_list(i_front=True)] = NodeType.INLET
+BCtype[myMesh.get_node_index_list(i_end=True)[10:20]] = NodeType.OUTLET
 
 # ===============================================================
 # Biuld model for simulation
@@ -51,6 +53,6 @@ else:
 myMesh.plot_grid(BCtype)
 
 # create solver
-mySolver = SolverLaplace(myMesh, myCoeff, BCtype, OperatorFDM3D, dir_name)
+mySolver = SolverLaplace(myMesh, myCoeff, BCtype, myOperator, dir_name)
 
 mySolver.start_solve()

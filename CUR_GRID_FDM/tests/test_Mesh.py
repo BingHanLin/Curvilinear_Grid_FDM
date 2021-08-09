@@ -24,6 +24,8 @@ class CurveRectangularMeshTestCase(unittest.TestCase):
     def test_RectangularMeshInfo(self):
         mesh = RectangularMesh(1.0, 4, 1.0, 4, 1.0, 4)
 
+        mesh.get_node_index_list(NODELOC.INTERIOR)
+
         self.assertEqual(mesh.node_number(), 4*4*4)
         self.assertEqual(mesh.mesh_size(), (4, 4, 4))
 

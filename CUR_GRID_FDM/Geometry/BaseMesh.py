@@ -95,12 +95,10 @@ class BaseMesh(abc.ABC):
             self._cal_out_norm()
         return self._out_norm
 
-    def get_node_index_list(self, loc: NODELOC):
+    def get_node_index_list(self, loc: NODELOC, inverse: bool = False):
         index_list = np.array([], dtype=int)
         node_num_list = np.zeros(self.mesh_size())
 
-        print("get_node_index_list")
-        print(node_num_list.shape)
         if NODELOC.I_START in loc:
             node_num_list[0, :, :] = 1
             print(node_num_list[0, :, :].shape)
@@ -126,8 +124,8 @@ class BaseMesh(abc.ABC):
             print(node_num_list[:, :, -1].shape)
 
         if NODELOC.INTERIOR in loc:
-            node_num_list[1:-1, :, 1:-1] = 1
-            print(node_num_list[1:-1, :, 1:-1].shape)
+            node_num_list[1:-1, 1:-1, 1:-1] = 1
+            print(node_num_list[1:-1, 1:-1, 1:-1].shape)
 
         if NODELOC.ALL in loc:
             node_num_list[:, :, :] = 1
@@ -137,7 +135,10 @@ class BaseMesh(abc.ABC):
         i_bool = np.where(node_num_list == 1)
         index_list = np.append(index_list, i_bool)
 
-        return index_list
+        if inverse == True:
+            return np.setdiff1d(np.arange(self._node_number), index_list)
+        else:
+            return index_list
 
     def plot_grid(self, BCtype=False):
 

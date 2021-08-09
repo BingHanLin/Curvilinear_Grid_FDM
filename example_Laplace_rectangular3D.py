@@ -1,6 +1,7 @@
 '''
 http://www.mathematik.uni-dortmund.de/~kuzmin/cfdintro/lecture4.pdf
 '''
+from CUR_GRID_FDM.Geometry.BaseMesh import NODELOC
 import os
 import shutil
 import numpy as np
@@ -20,7 +21,7 @@ nx = 10
 ny = 10
 nz = 10
 
-dir_name = 'OUTOUT'
+dirName = 'output'
 
 # ===============================================================
 # Biuld Mesh
@@ -31,13 +32,12 @@ myMesh = RectangularMesh(Lx, nx, Ly, ny, Lz, nz)
 
 # # Calculate coefficients for curvilinear coordinates
 myCoeff = CalCoeff(myMesh)
+myOperator = OperatorFDM3D(myMesh)
 
 # # define boundary type
-BCtype = np.zeros_like(myMesh.X_flatten)
+BCtype = np.zeros_like(myMesh.x_flatten())
 
-BCtype[myMesh.get_node_index_list(i_front = True,i_end = True, 
-                                  j_front = True ,j_end = True, 
-                                  k_front = True ,k_end = True)] = NodeType.DIRICHLET
+BCtype[myMesh.get_node_index_list(NODELOC.INTERIOR, True)] = NodeType.DIRICHLET
 
 
 # ===============================================================
@@ -45,15 +45,15 @@ BCtype[myMesh.get_node_index_list(i_front = True,i_end = True,
 # ===============================================================
 
 # Create folder for output data
-if not os.path.isdir(dir_name):
-    os.makedirs(dir_name)
+if not os.path.isdir(dirName):
+    os.makedirs(dirName)
 else:
-    shutil.rmtree(dir_name)
-    os.makedirs(dir_name)
+    shutil.rmtree(dirName)
+    os.makedirs(dirName)
 
 myMesh.plot_grid(BCtype)
 
 # create solver
-mySolver = SolverLaplace(myMesh, myCoeff, BCtype, OperatorFDM3D, dir_name)
+mySolver = SolverLaplace(myMesh, myCoeff, BCtype, myOperator, dirName)
 
 mySolver.start_solve()
