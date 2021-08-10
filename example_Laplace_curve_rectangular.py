@@ -1,14 +1,14 @@
 '''
 http://www.mathematik.uni-dortmund.de/~kuzmin/cfdintro/lecture4.pdf
 '''
-from CUR_GRID_FDM.Geometry.BaseMesh import NODELOC
 import os
 import shutil
 import numpy as np
 
+from CUR_GRID_FDM.Geometry.BaseMesh import NODELOC
 from CUR_GRID_FDM.DiscreteSchemes import OperatorFDM3D, CalCoeff
-from CUR_GRID_FDM.Geometry import RectangularMesh
-from Solver.Laplace_rectangular3D import SolverLaplace, NodeType
+from CUR_GRID_FDM.Geometry import CurveRectangularMesh
+from Solver.Laplace_rectangular import SolverLaplace, NodeType
 
 # ===============================================================
 # Setting Parameters
@@ -18,8 +18,8 @@ Ly = 1
 Lz = 1
 
 nx = 10
-ny = 10
-nz = 10
+ny = 12
+nz = 13
 
 dirName = 'output'
 
@@ -28,7 +28,7 @@ dirName = 'output'
 # ===============================================================
 
 # create rectangular mesh
-myMesh = RectangularMesh(Lx, nx, Ly, ny, Lz, nz)
+myMesh = CurveRectangularMesh(Lx, nx, Ly, ny, Lz, nz)
 
 # # Calculate coefficients for curvilinear coordinates
 myCoeff = CalCoeff(myMesh)

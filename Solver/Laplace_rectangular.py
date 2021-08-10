@@ -5,6 +5,7 @@ import os
 import shutil
 import scipy.sparse as sp
 from scipy.sparse.linalg import bicgstab, spsolve, gmres, lgmres
+
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
@@ -16,16 +17,14 @@ class NodeType(enum.IntEnum):
 
 class SolverLaplace:
 
-    def __init__(self, mesh, coeff, BCtype, opertor, dir_name):
+    def __init__(self, mesh, coeff, BCtype, opertor, dirName):
 
         self._mesh = mesh
         self._coeff = coeff
         self._BCtype = BCtype
         self._opertor = opertor
-        self._dir_name = dir_name
+        self._dirName = dirName
         self._assmemble()
-
-        print('Laplace solver is created')
 
     def _assmemble(self):
 
@@ -64,11 +63,9 @@ class SolverLaplace:
     # ============================================
     def start_solve(self):
 
-        B = np.zeros_like(self._mesh.x_flatten().T)
-
-        for i in range(len(self._mesh.x_flatten())):
-            if self._mesh.y_flatten()[i] == 1:
-                B[i] = 100
+        B = np.zeros_like(self._mesh.x())
+        B[0, :, :] = 1
+        B = np.reshape(B, self._mesh.node_number(), order='F')
 
         self._phi = lgmres(self._systemMatrix, B)[0]
 
@@ -81,5 +78,5 @@ class SolverLaplace:
 
         plt.show()
 
-        self.printDate(self._dir_name)
+        self.printDate(self._dirName)
         print('Calculation Completed!!!')

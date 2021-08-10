@@ -79,13 +79,13 @@ class BaseMesh(abc.ABC):
         return self._z
 
     def x_flatten(self):
-        return np.reshape(self._x, self._node_number, order='F')
+        return np.reshape(self._x, self.node_number(), order='F')
 
     def y_flatten(self):
-        return np.reshape(self._y, self._node_number, order='F')
+        return np.reshape(self._y, self.node_number(), order='F')
 
     def z_flatten(self):
-        return np.reshape(self._z, self._node_number, order='F')
+        return np.reshape(self._z, self.node_number(), order='F')
 
     def node_number(self):
         return self._node_number
@@ -101,31 +101,31 @@ class BaseMesh(abc.ABC):
 
         if NODELOC.I_START in loc:
             node_num_list[0, :, :] = 1
-            print(node_num_list[0, :, :].shape)
+            # print(node_num_list[0, :, :].shape)
 
         if NODELOC.I_END in loc:
             node_num_list[-1, :, :] = 1
-            print(node_num_list[-1, :, :].shape)
+            # print(node_num_list[-1, :, :].shape)
 
         if NODELOC.J_START in loc:
             node_num_list[:, 0, :] = 1
-            print(node_num_list[:, 0, :].shape)
+            # print(node_num_list[:, 0, :].shape)
 
         if NODELOC.J_END in loc:
             node_num_list[:, -1, :] = 1
-            print(node_num_list[:, -1, :].shape)
+            # print(node_num_list[:, -1, :].shape)
 
         if NODELOC.K_START in loc:
             node_num_list[:, :, 0] = 1
-            print(node_num_list[:, :, 0].shape)
+            # print(node_num_list[:, :, 0].shape)
 
         if NODELOC.K_END in loc:
             node_num_list[:, :, -1] = 1
-            print(node_num_list[:, :, -1].shape)
+            # print(node_num_list[:, :, -1].shape)
 
         if NODELOC.INTERIOR in loc:
             node_num_list[1:-1, 1:-1, 1:-1] = 1
-            print(node_num_list[1:-1, 1:-1, 1:-1].shape)
+            # print(node_num_list[1:-1, 1:-1, 1:-1].shape)
 
         if NODELOC.ALL in loc:
             node_num_list[:, :, :] = 1
@@ -136,7 +136,7 @@ class BaseMesh(abc.ABC):
         index_list = np.append(index_list, i_bool)
 
         if inverse == True:
-            return np.setdiff1d(np.arange(self._node_number), index_list)
+            return np.setdiff1d(np.arange(self.node_number()), index_list)
         else:
             return index_list
 
