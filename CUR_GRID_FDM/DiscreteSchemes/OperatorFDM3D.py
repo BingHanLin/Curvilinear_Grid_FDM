@@ -175,7 +175,7 @@ class OperatorFDM3D:
     # https://stackoverflow.com/questions/19784868/what-is-most-efficient-way-of-setting-row-to-zeros-for-a-sparse-scipy-matrix
     def csr_zero_rows(self, csr, rows_to_zero):
         rows, cols = csr.shape
-        mask = np.ones((rows,), dtype=np.bool)
+        mask = np.ones((rows,), dtype=bool)
         mask[rows_to_zero] = False
         nnz_per_row = np.diff(csr.indptr)
 

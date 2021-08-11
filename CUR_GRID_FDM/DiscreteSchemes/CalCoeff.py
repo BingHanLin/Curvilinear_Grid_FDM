@@ -81,7 +81,7 @@ class CalCoeff:
         for i in range(3):
             for j in range(3):
                 d_metric_tensor[..., i, j, 0], d_metric_tensor[..., i, j, 1], d_metric_tensor[..., i, j, 2] = \
-                    np.gradient(self._metric_tensor[..., i, j])
+                    np.gradient(self._metric_tensor[..., i, j], axis=(0, 1, 2))
 
         # calculate christoffel symbols
         for i in range(3):

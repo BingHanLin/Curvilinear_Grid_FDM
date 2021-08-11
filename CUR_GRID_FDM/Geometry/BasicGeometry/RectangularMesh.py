@@ -23,6 +23,6 @@ class RectangularMesh(BaseMesh):
 
         x = np.linspace(0, self._lx, self._nx)
         y = np.linspace(0, self._ly, self._ny)
-        z = np.linspace(0, self._ly, self._nz)
+        z = np.linspace(0, self._lz, self._nz)
 
         self._x, self._y, self._z = np.meshgrid(x, y, z, indexing='ij')
