@@ -140,17 +140,16 @@ class BaseMesh(abc.ABC):
         else:
             return index_list
 
-    def plot_grid(self, BCtype=False):
+    def plot_grid(self, BCtype=None):
 
         fig = plt.figure()
         ax = fig.add_subplot(111, projection='3d')
 
         marker_size = 50
 
-        if BCtype is False:
-            ax.scatter(self.x_flatten(), self._y_flatten, self._z_flatten,
+        if BCtype is None:
+            ax.scatter(self.x_flatten(), self.y_flatten(), self.z_flatten(),
                        marker='o', c='g', s=marker_size, label='nodes')
-
         else:
             for nodetype in set(BCtype):
 
@@ -160,6 +159,40 @@ class BaseMesh(abc.ABC):
                            np.ma.masked_array(self.y_flatten(), mask.mask),
                            np.ma.masked_array(self.z_flatten(), mask.mask),
                            marker='o', s=marker_size, label='nodetype: {}'.format(int(nodetype)))
+
+        plt.legend()
+        plt.axis('auto')
+        plt.show()
+
+    def plot_nodeIJK(self, i, j, k):
+
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+
+        marker_size = 50
+
+        ax.scatter(self.x_flatten(), self.y_flatten(), self.z_flatten(),
+                   marker='o', c='g', s=marker_size+5, label='nodes')
+
+        ax.scatter(self.x()[i, j, k], self.y()[i, j, k], self.z()[i, j, k],
+                   marker='o', c='r', s=marker_size, label='nodes')
+
+        plt.legend()
+        plt.axis('auto')
+        plt.show()
+
+    def plot_node(self, index):
+
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+
+        marker_size = 50
+
+        ax.scatter(self.x_flatten(), self.y_flatten(), self.z_flatten(),
+                   marker='o', c='g', s=marker_size+5, label='nodes')
+
+        ax.scatter(self.x_flatten()[index], self.y_flatten()[index], self.z_flatten()[index],
+                   marker='o', c='r', s=marker_size, label='nodes')
 
         plt.legend()
         plt.axis('auto')
