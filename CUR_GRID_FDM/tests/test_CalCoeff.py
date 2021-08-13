@@ -51,39 +51,32 @@ class CalCoeffTestCase(unittest.TestCase):
             2)[10]) == 0.0)
 
     def test_metricTensor(self):
-        id = 1
+        ids = [0, 3, 6]
 
-        print(self.coeff.get_metric_tensor(0, 0)[id])
-        print(np.dot(self.coeff.get_con_basis(0)[
-              id], self.coeff.get_con_basis(0)[id]))
+        for id in ids:
+            diff = self.coeff.get_metric_tensor(0, 0)[id] - np.dot(
+                self.coeff.get_co_basis(0)[id], self.coeff.get_co_basis(0)[id])
+            self.assertTrue(abs(diff) < 10e-8)
 
-        diff = self.coeff.get_metric_tensor(0, 0)[id] - np.dot(
-            self.coeff.get_con_basis(0)[id], self.coeff.get_con_basis(0)[id])
-        self.assertTrue(abs(diff) < 10e-8)
+            diff = self.coeff.get_metric_tensor(1, 1)[id] - np.dot(
+                self.coeff.get_co_basis(1)[id], self.coeff.get_co_basis(1)[id])
+            self.assertTrue(abs(diff) < 10e-8)
 
-        print(self.coeff.get_metric_tensor(1, 1)[id])
-        print(np.dot(self.coeff.get_con_basis(1)[
-              id], self.coeff.get_con_basis(1)[id]))
+            diff = self.coeff.get_metric_tensor(2, 2)[id] - np.dot(
+                self.coeff.get_co_basis(2)[id], self.coeff.get_co_basis(2)[id])
+            self.assertTrue(abs(diff) < 10e-8)
 
-        # diff = self.coeff.get_metric_tensor(1, 1)[id] - np.dot(
-        #     self.coeff.get_con_basis(1)[id], self.coeff.get_con_basis(1)[id])
-        # self.assertTrue(abs(diff) < 10e-8)
+            diff = self.coeff.get_metric_tensor(0, 1)[id] - np.dot(
+                self.coeff.get_co_basis(0)[id], self.coeff.get_co_basis(1)[id])
+            self.assertTrue(abs(diff) < 10e-8)
 
-        diff = self.coeff.get_metric_tensor(2, 2)[id] - np.dot(
-            self.coeff.get_con_basis(2)[id], self.coeff.get_con_basis(2)[id])
-        self.assertTrue(abs(diff) < 10e-8)
+            diff = self.coeff.get_metric_tensor(0, 2)[id] - np.dot(
+                self.coeff.get_co_basis(0)[id], self.coeff.get_co_basis(2)[id])
+            self.assertTrue(abs(diff) < 10e-8)
 
-        diff = self.coeff.get_metric_tensor(0, 1)[id] - np.dot(
-            self.coeff.get_con_basis(0)[id], self.coeff.get_con_basis(1)[id])
-        self.assertTrue(abs(diff) < 10e-8)
-
-        diff = self.coeff.get_metric_tensor(0, 2)[id] - np.dot(
-            self.coeff.get_con_basis(1)[id], self.coeff.get_con_basis(0)[id])
-        self.assertTrue(abs(diff) < 10e-8)
-
-        diff = self.coeff.get_metric_tensor(1, 2)[id] - np.dot(
-            self.coeff.get_con_basis(1)[id], self.coeff.get_con_basis(2)[id])
-        self.assertTrue(abs(diff) < 10e-8)
+            diff = self.coeff.get_metric_tensor(1, 2)[id] - np.dot(
+                self.coeff.get_co_basis(1)[id], self.coeff.get_co_basis(2)[id])
+            self.assertTrue(abs(diff) < 10e-8)
 
 
 if __name__ == "__main__":
