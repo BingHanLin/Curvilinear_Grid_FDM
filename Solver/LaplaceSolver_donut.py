@@ -28,10 +28,10 @@ class SolverLaplace:
 
     def _assmemble(self):
 
-        IJK = ['i', 'j', 'k']
+        # IJK = ['i', 'j', 'k']
 
-        sum = np.zeros(
-            (self._mesh.node_number(), self._mesh.node_number()))
+        # sum = np.zeros(
+        #     (self._mesh.node_number(), self._mesh.node_number()))
 
         # for i in range(3):
         #     for j in range(3):
@@ -43,9 +43,12 @@ class SolverLaplace:
             self._opertor.der_2('i').multiply(self._coeff.get_inv_metric_tensor(0, 0)) +
             self._opertor.der_2('j').multiply(self._coeff.get_inv_metric_tensor(1, 1)) +
             self._opertor.der_2('k').multiply(self._coeff.get_inv_metric_tensor(2, 2)) +
-            2*self._opertor.der_11('ij').multiply(self._coeff.get_inv_metric_tensor(0, 1)) +
-            2*self._opertor.der_11('ik').multiply(self._coeff.get_inv_metric_tensor(0, 2)) +
-            2*self._opertor.der_11('jk').multiply(self._coeff.get_inv_metric_tensor(1, 2)) -
+            self._opertor.der_11('ij').multiply(self._coeff.get_inv_metric_tensor(0, 1)) +
+            self._opertor.der_11('ik').multiply(self._coeff.get_inv_metric_tensor(0, 2)) +
+            self._opertor.der_11('jk').multiply(self._coeff.get_inv_metric_tensor(1, 2)) +
+            self._opertor.der_11('ji').multiply(self._coeff.get_inv_metric_tensor(1, 0)) +
+            self._opertor.der_11('ki').multiply(self._coeff.get_inv_metric_tensor(2, 0)) +
+            self._opertor.der_11('kj').multiply(self._coeff.get_inv_metric_tensor(2, 1)) -
             self._opertor.der_1('i').multiply(self._coeff.get_inv_metric_tensor(0, 0) * self._coeff.get_christoffel_symbol(0, 0, 0)) -
             self._opertor.der_1('i').multiply(self._coeff.get_inv_metric_tensor(0, 1) * self._coeff.get_christoffel_symbol(0, 0, 1)) -
             self._opertor.der_1('i').multiply(self._coeff.get_inv_metric_tensor(0, 2) * self._coeff.get_christoffel_symbol(0, 0, 2)) -
@@ -107,14 +110,19 @@ class SolverLaplace:
 
         B = np.zeros_like(self._mesh.x())
 
-        print(B[:, :, 0].shape)
         # B[:, 0, :] = 100
         # B[:, -1, :] = 50
-        B[0, :, :] = 100
-        B[-1, :, :] = 50
+        B[0, :, :] = 50
+        B[-1, :, :] = 100
+        # B[:, :, 0] = 50
         B = np.reshape(B, self._mesh.node_number(), order='F')
 
-        self._phi = lgmres(self._SystemMatrix, B)[0]
+        self._phi, _ = lgmres(self._SystemMatrix, B, tol=10e-20)
+
+        t = self._SystemMatrix*self._phi
+
+        for i in range(B.shape[0]):
+            print(t[i], " <--> ", B[i], " <--> ", self._phi[i])
 
         fig = plt.figure()
 
