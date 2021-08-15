@@ -36,48 +36,46 @@ class SolverLaplace:
         # for i in range(3):
         #     for j in range(3):
         #         for k in range(3):
-        #             sum -= self._opertor.der_1(IJK[i]).multiply(self._coeff.get_inv_metric_tensor(
-        #                 j, k) * self._coeff.get_christoffel_symbol(i, j, k))
+        #             sum -= self._opertor.der_1(IJK[i]).multiply((self._coeff.get_inv_metric_tensor(
+        #                 j, k) * self._coeff.get_christoffel_symbol(i, j, k)).reshape(-1, 1))
 
-        self._SystemMatrix = sp.csr_matrix(
-            self._opertor.der_2('i').multiply(self._coeff.get_inv_metric_tensor(0, 0)) +
-            self._opertor.der_2('j').multiply(self._coeff.get_inv_metric_tensor(1, 1)) +
-            self._opertor.der_2('k').multiply(self._coeff.get_inv_metric_tensor(2, 2)) +
-            self._opertor.der_11('ij').multiply(self._coeff.get_inv_metric_tensor(0, 1)) +
-            self._opertor.der_11('ik').multiply(self._coeff.get_inv_metric_tensor(0, 2)) +
-            self._opertor.der_11('jk').multiply(self._coeff.get_inv_metric_tensor(1, 2)) +
-            self._opertor.der_11('ji').multiply(self._coeff.get_inv_metric_tensor(1, 0)) +
-            self._opertor.der_11('ki').multiply(self._coeff.get_inv_metric_tensor(2, 0)) +
-            self._opertor.der_11('kj').multiply(self._coeff.get_inv_metric_tensor(2, 1)) -
-            self._opertor.der_1('i').multiply(self._coeff.get_inv_metric_tensor(0, 0) * self._coeff.get_christoffel_symbol(0, 0, 0)) -
-            self._opertor.der_1('i').multiply(self._coeff.get_inv_metric_tensor(0, 1) * self._coeff.get_christoffel_symbol(0, 0, 1)) -
-            self._opertor.der_1('i').multiply(self._coeff.get_inv_metric_tensor(0, 2) * self._coeff.get_christoffel_symbol(0, 0, 2)) -
-            self._opertor.der_1('i').multiply(self._coeff.get_inv_metric_tensor(1, 0) * self._coeff.get_christoffel_symbol(0, 1, 0)) -
-            self._opertor.der_1('i').multiply(self._coeff.get_inv_metric_tensor(1, 1) * self._coeff.get_christoffel_symbol(0, 1, 1)) -
-            self._opertor.der_1('i').multiply(self._coeff.get_inv_metric_tensor(1, 2) * self._coeff.get_christoffel_symbol(0, 1, 2)) -
-            self._opertor.der_1('i').multiply(self._coeff.get_inv_metric_tensor(2, 0) * self._coeff.get_christoffel_symbol(0, 2, 0)) -
-            self._opertor.der_1('i').multiply(self._coeff.get_inv_metric_tensor(2, 1) * self._coeff.get_christoffel_symbol(0, 2, 1)) -
-            self._opertor.der_1('i').multiply(self._coeff.get_inv_metric_tensor(2, 2) * self._coeff.get_christoffel_symbol(0, 2, 2)) -
-            self._opertor.der_1('j').multiply(self._coeff.get_inv_metric_tensor(0, 0) * self._coeff.get_christoffel_symbol(1, 0, 0)) -
-            self._opertor.der_1('j').multiply(self._coeff.get_inv_metric_tensor(0, 1) * self._coeff.get_christoffel_symbol(1, 0, 1)) -
-            self._opertor.der_1('j').multiply(self._coeff.get_inv_metric_tensor(0, 2) * self._coeff.get_christoffel_symbol(1, 0, 2)) -
-            self._opertor.der_1('j').multiply(self._coeff.get_inv_metric_tensor(1, 0) * self._coeff.get_christoffel_symbol(1, 1, 0)) -
-            self._opertor.der_1('j').multiply(self._coeff.get_inv_metric_tensor(1, 1) * self._coeff.get_christoffel_symbol(1, 1, 1)) -
-            self._opertor.der_1('j').multiply(self._coeff.get_inv_metric_tensor(1, 2) * self._coeff.get_christoffel_symbol(1, 1, 2)) -
-            self._opertor.der_1('j').multiply(self._coeff.get_inv_metric_tensor(2, 0) * self._coeff.get_christoffel_symbol(1, 2, 0)) -
-            self._opertor.der_1('j').multiply(self._coeff.get_inv_metric_tensor(2, 1) * self._coeff.get_christoffel_symbol(1, 2, 1)) -
-            self._opertor.der_1('j').multiply(self._coeff.get_inv_metric_tensor(2, 2) * self._coeff.get_christoffel_symbol(1, 2, 2)) -
-            self._opertor.der_1('k').multiply(self._coeff.get_inv_metric_tensor(0, 0) * self._coeff.get_christoffel_symbol(2, 0, 0)) -
-            self._opertor.der_1('k').multiply(self._coeff.get_inv_metric_tensor(0, 1) * self._coeff.get_christoffel_symbol(2, 0, 1)) -
-            self._opertor.der_1('k').multiply(self._coeff.get_inv_metric_tensor(0, 2) * self._coeff.get_christoffel_symbol(2, 0, 2)) -
-            self._opertor.der_1('k').multiply(self._coeff.get_inv_metric_tensor(1, 0) * self._coeff.get_christoffel_symbol(2, 1, 0)) -
-            self._opertor.der_1('k').multiply(self._coeff.get_inv_metric_tensor(1, 1) * self._coeff.get_christoffel_symbol(2, 1, 1)) -
-            self._opertor.der_1('k').multiply(self._coeff.get_inv_metric_tensor(1, 2) * self._coeff.get_christoffel_symbol(2, 1, 2)) -
-            self._opertor.der_1('k').multiply(self._coeff.get_inv_metric_tensor(2, 0) * self._coeff.get_christoffel_symbol(2, 2, 0)) -
-            self._opertor.der_1('k').multiply(self._coeff.get_inv_metric_tensor(2, 1) * self._coeff.get_christoffel_symbol(2, 2, 1)) -
-            self._opertor.der_1('k').multiply(self._coeff.get_inv_metric_tensor(
-                2, 2) * self._coeff.get_christoffel_symbol(2, 2, 2))
-        )
+        self._SystemMatrix = (self._opertor.der_2('i').multiply(self._coeff.get_inv_metric_tensor(0, 0).reshape(-1, 1)) +
+                              self._opertor.der_2('j').multiply(self._coeff.get_inv_metric_tensor(1, 1).reshape(-1, 1)) +
+                              self._opertor.der_2('k').multiply(self._coeff.get_inv_metric_tensor(2, 2).reshape(-1, 1)) +
+                              self._opertor.der_11('ij').multiply(self._coeff.get_inv_metric_tensor(0, 1).reshape(-1, 1)) +
+                              self._opertor.der_11('ik').multiply(self._coeff.get_inv_metric_tensor(0, 2).reshape(-1, 1)) +
+                              self._opertor.der_11('jk').multiply(self._coeff.get_inv_metric_tensor(1, 2).reshape(-1, 1)) +
+                              self._opertor.der_11('ji').multiply(self._coeff.get_inv_metric_tensor(1, 0).reshape(-1, 1)) +
+                              self._opertor.der_11('ki').multiply(self._coeff.get_inv_metric_tensor(2, 0).reshape(-1, 1)) +
+                              self._opertor.der_11('kj').multiply(self._coeff.get_inv_metric_tensor(2, 1).reshape(-1, 1)) -
+                              self._opertor.der_1('i').multiply((self._coeff.get_inv_metric_tensor(0, 0) * self._coeff.get_christoffel_symbol(0, 0, 0)).reshape(-1, 1)) -
+                              self._opertor.der_1('i').multiply((self._coeff.get_inv_metric_tensor(0, 1) * self._coeff.get_christoffel_symbol(0, 0, 1)).reshape(-1, 1)) -
+                              self._opertor.der_1('i').multiply((self._coeff.get_inv_metric_tensor(0, 2) * self._coeff.get_christoffel_symbol(0, 0, 2)).reshape(-1, 1)) -
+                              self._opertor.der_1('i').multiply((self._coeff.get_inv_metric_tensor(1, 0) * self._coeff.get_christoffel_symbol(0, 1, 0)).reshape(-1, 1)) -
+                              self._opertor.der_1('i').multiply((self._coeff.get_inv_metric_tensor(1, 1) * self._coeff.get_christoffel_symbol(0, 1, 1)).reshape(-1, 1)) -
+                              self._opertor.der_1('i').multiply((self._coeff.get_inv_metric_tensor(1, 2) * self._coeff.get_christoffel_symbol(0, 1, 2)).reshape(-1, 1)) -
+                              self._opertor.der_1('i').multiply((self._coeff.get_inv_metric_tensor(2, 0) * self._coeff.get_christoffel_symbol(0, 2, 0)).reshape(-1, 1)) -
+                              self._opertor.der_1('i').multiply((self._coeff.get_inv_metric_tensor(2, 1) * self._coeff.get_christoffel_symbol(0, 2, 1)).reshape(-1, 1)) -
+                              self._opertor.der_1('i').multiply((self._coeff.get_inv_metric_tensor(2, 2) * self._coeff.get_christoffel_symbol(0, 2, 2)).reshape(-1, 1)) -
+                              self._opertor.der_1('j').multiply((self._coeff.get_inv_metric_tensor(0, 0) * self._coeff.get_christoffel_symbol(1, 0, 0)).reshape(-1, 1)) -
+                              self._opertor.der_1('j').multiply((self._coeff.get_inv_metric_tensor(0, 1) * self._coeff.get_christoffel_symbol(1, 0, 1)).reshape(-1, 1)) -
+                              self._opertor.der_1('j').multiply((self._coeff.get_inv_metric_tensor(0, 2) * self._coeff.get_christoffel_symbol(1, 0, 2)).reshape(-1, 1)) -
+                              self._opertor.der_1('j').multiply((self._coeff.get_inv_metric_tensor(1, 0) * self._coeff.get_christoffel_symbol(1, 1, 0)).reshape(-1, 1)) -
+                              self._opertor.der_1('j').multiply((self._coeff.get_inv_metric_tensor(1, 1) * self._coeff.get_christoffel_symbol(1, 1, 1)).reshape(-1, 1)) -
+                              self._opertor.der_1('j').multiply((self._coeff.get_inv_metric_tensor(1, 2) * self._coeff.get_christoffel_symbol(1, 1, 2)).reshape(-1, 1)) -
+                              self._opertor.der_1('j').multiply((self._coeff.get_inv_metric_tensor(2, 0) * self._coeff.get_christoffel_symbol(1, 2, 0)).reshape(-1, 1)) -
+                              self._opertor.der_1('j').multiply((self._coeff.get_inv_metric_tensor(2, 1) * self._coeff.get_christoffel_symbol(1, 2, 1)).reshape(-1, 1)) -
+                              self._opertor.der_1('j').multiply((self._coeff.get_inv_metric_tensor(2, 2) * self._coeff.get_christoffel_symbol(1, 2, 2)).reshape(-1, 1)) -
+                              self._opertor.der_1('k').multiply((self._coeff.get_inv_metric_tensor(0, 0) * self._coeff.get_christoffel_symbol(2, 0, 0)).reshape(-1, 1)) -
+                              self._opertor.der_1('k').multiply((self._coeff.get_inv_metric_tensor(0, 1) * self._coeff.get_christoffel_symbol(2, 0, 1)).reshape(-1, 1)) -
+                              self._opertor.der_1('k').multiply((self._coeff.get_inv_metric_tensor(0, 2) * self._coeff.get_christoffel_symbol(2, 0, 2)).reshape(-1, 1)) -
+                              self._opertor.der_1('k').multiply((self._coeff.get_inv_metric_tensor(1, 0) * self._coeff.get_christoffel_symbol(2, 1, 0)).reshape(-1, 1)) -
+                              self._opertor.der_1('k').multiply((self._coeff.get_inv_metric_tensor(1, 1) * self._coeff.get_christoffel_symbol(2, 1, 1)).reshape(-1, 1)) -
+                              self._opertor.der_1('k').multiply((self._coeff.get_inv_metric_tensor(1, 2) * self._coeff.get_christoffel_symbol(2, 1, 2)).reshape(-1, 1)) -
+                              self._opertor.der_1('k').multiply((self._coeff.get_inv_metric_tensor(2, 0) * self._coeff.get_christoffel_symbol(2, 2, 0)).reshape(-1, 1)) -
+                              self._opertor.der_1('k').multiply((self._coeff.get_inv_metric_tensor(2, 1) * self._coeff.get_christoffel_symbol(2, 2, 1)).reshape(-1, 1)) -
+                              self._opertor.der_1('k').multiply((self._coeff.get_inv_metric_tensor(
+                                  2, 2) * self._coeff.get_christoffel_symbol(2, 2, 2)).reshape(-1, 1)))
 
         temp_matrix = self._opertor.no_operation()
 
@@ -111,18 +109,14 @@ class SolverLaplace:
         B = np.zeros_like(self._mesh.x())
 
         # B[:, 0, :] = 100
-        # B[:, -1, :] = 50
+        # B[:, -1, :] = 0
         B[0, :, :] = 50
         B[-1, :, :] = 100
         # B[:, :, 0] = 50
+        # B[:, :, -1] = 100
         B = np.reshape(B, self._mesh.node_number(), order='F')
 
-        self._phi, _ = lgmres(self._SystemMatrix, B, tol=10e-20)
-
-        t = self._SystemMatrix*self._phi
-
-        for i in range(B.shape[0]):
-            print(t[i], " <--> ", B[i], " <--> ", self._phi[i])
+        self._phi, _ = lgmres(self._SystemMatrix, B)
 
         fig = plt.figure()
 

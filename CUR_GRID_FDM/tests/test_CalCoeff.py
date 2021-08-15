@@ -10,10 +10,8 @@ import math
 
 class CalCoeffTestCase(unittest.TestCase):
     def setUp(self):
-        mesh = DonutMesh(2.0, 5.0, 4, 12, 2.0, 3)
-        self.coeff = CalCoeff(mesh)
-        # mesh.plot_nodeIJK(0, 0, 0)
-        # mesh.plot_node(4)
+        self.mesh = DonutMesh(2.0, 5.0, 4, 12, 2.0, 3)
+        self.coeff = CalCoeff(self.mesh)
 
     # def tearDown(self):
 
@@ -77,6 +75,42 @@ class CalCoeffTestCase(unittest.TestCase):
             diff = self.coeff.get_metric_tensor(1, 2)[id] - np.dot(
                 self.coeff.get_co_basis(1)[id], self.coeff.get_co_basis(2)[id])
             self.assertTrue(abs(diff) < 10e-8)
+
+    def test_invMetricTensor(self):
+        ids = [0, 3, 6]
+
+        for id in ids:
+            diff = self.coeff.get_inv_metric_tensor(0, 0)[id] - np.dot(
+                self.coeff.get_con_basis(0)[id], self.coeff.get_con_basis(0)[id])
+            self.assertTrue(abs(diff) < 10e-8)
+
+            diff = self.coeff.get_inv_metric_tensor(1, 1)[id] - np.dot(
+                self.coeff.get_con_basis(1)[id], self.coeff.get_con_basis(1)[id])
+            self.assertTrue(abs(diff) < 10e-8)
+
+            diff = self.coeff.get_inv_metric_tensor(2, 2)[id] - np.dot(
+                self.coeff.get_con_basis(2)[id], self.coeff.get_con_basis(2)[id])
+            self.assertTrue(abs(diff) < 10e-8)
+
+            diff = self.coeff.get_inv_metric_tensor(0, 1)[id] - np.dot(
+                self.coeff.get_con_basis(0)[id], self.coeff.get_con_basis(1)[id])
+            self.assertTrue(abs(diff) < 10e-8)
+
+            diff = self.coeff.get_inv_metric_tensor(0, 2)[id] - np.dot(
+                self.coeff.get_con_basis(0)[id], self.coeff.get_con_basis(2)[id])
+            self.assertTrue(abs(diff) < 10e-8)
+
+            diff = self.coeff.get_inv_metric_tensor(1, 2)[id] - np.dot(
+                self.coeff.get_con_basis(1)[id], self.coeff.get_con_basis(2)[id])
+            self.assertTrue(abs(diff) < 10e-8)
+
+    def test_christoffelSymbol(self):
+        pass
+        # print(self.coeff._christoffel_symbol[..., 1, 0, 1])
+        # print("*************************")
+        # print(self.coeff._christoffel_symbol[..., 1, 1, 0])
+        # print("*************************")
+        # print(self.coeff._christoffel_symbol[..., 0, 1, 1])
 
 
 if __name__ == "__main__":

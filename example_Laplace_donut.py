@@ -20,7 +20,7 @@ dirName = 'output'
 # ===============================================================
 
 # create rectangular mesh
-myMesh = DonutMesh(3.0, 6.0, 6, 6, 1.0, 6)
+myMesh = DonutMesh(3.0, 12.0, 10, 36, 10.0, 6)
 
 # Calculate coefficients for curvilinear coordinates
 myCoeff = CalCoeff(myMesh)

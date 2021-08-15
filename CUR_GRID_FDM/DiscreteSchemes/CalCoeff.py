@@ -71,29 +71,29 @@ class CalCoeff:
                     'ijkl,ijkl->ijk', self._con_basis[i], self._con_basis[j])
 
     def _cal_christoffel_symbol(self):
+
         # https://johnkerl.org/gdg/gdgprojnotes.pdf
         # create christoffel symbols
         self._christoffel_symbol = np.zeros(
             (self._mesh.mesh_size() + (3, 3, 3)))
 
         # # get gradient along i, j, k direction
-        d_metric_tensor = np.zeros((self._metric_tensor.shape + (3,)))
+        d_metric_tensor = np.zeros((3,)+self._metric_tensor.shape)
         for i in range(3):
             for j in range(3):
-                d_metric_tensor[..., i, j, 0], d_metric_tensor[..., i, j, 1], d_metric_tensor[..., i, j, 2] = \
-                    np.gradient(self._metric_tensor[..., i, j], axis=(0, 1, 2))
+                d_metric_tensor[0, ..., i, j], d_metric_tensor[1, ..., i, j], d_metric_tensor[2, ..., i, j] = \
+                    np.gradient(self._metric_tensor[..., i, j], axis=(
+                        0, 1, 2), edge_order=2)
 
         # calculate christoffel symbols
         for i in range(3):
             for j in range(3):
                 for k in range(3):
                     for m in range(3):
-                        self._christoffel_symbol[..., i, j, k] = \
-                            self._christoffel_symbol[..., i, j, k] + \
-                            0.5*self._inv_metric_tensor[..., i, m]*(
-                                d_metric_tensor[..., m, j, k] +
-                                d_metric_tensor[..., k, m, j] -
-                                d_metric_tensor[..., j, k, m])
+                        self._christoffel_symbol[..., i, j, k] +=\
+                            0.5*np.multiply(self._inv_metric_tensor[..., i, m], d_metric_tensor[k, ..., m, j] +
+                                            d_metric_tensor[j, ..., k, m] -
+                                            d_metric_tensor[m, ..., j, k])
 
     def get_co_basis(self, idx):
         return np.reshape(self._co_basis[idx, ..., :], (self._mesh.node_number(), 3), order='F')
