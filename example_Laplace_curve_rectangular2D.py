@@ -6,17 +6,17 @@ import shutil
 import numpy as np
 
 from CUR_GRID_FDM.DiscreteSchemes import OperatorFDM3D, CalCoeff
-from CUR_GRID_FDM.Geometry import RectangularMesh
-from Solver.Laplace_rectangular2D import SolverLaplace, NodeType
+from CUR_GRID_FDM.Geometry import CurveRectangularMesh
+from Solver.LaplaceSolver_rec_all_NuemannBC2D import SolverLaplace, NodeType
 
 # ===============================================================
 # Setting Parameters
 # ===============================================================
-Lx = 1
+Lx = 2
 Ly = 1
 
-nx = 10
-ny = 10
+nx = 40
+ny = 20
 
 dir_name = 'OUTOUT'
 
@@ -25,15 +25,19 @@ dir_name = 'OUTOUT'
 # ===============================================================
 
 # create rectangular mesh
-myMesh = RectangularMesh(Lx, nx, Ly, ny)
+myMesh = CurveRectangularMesh(Lx, nx, Ly, ny)
 
 # # Calculate coefficients for curvilinear coordinates
 myCoeff = CalCoeff(myMesh)
+myOperator = OperatorFDM3D(myMesh)
 
 # define boundary type
 BCtype = np.zeros_like(myMesh.X_flatten)
 
-BCtype[myMesh.get_node_index_list(i_front = True,i_end = True, j_front = True ,j_end = True)] = NodeType.DIRICHLET
+BCtype[myMesh.get_node_index_list(
+    i_end=True, j_end=True, i_front=True, j_front=True)] = NodeType.WALL
+BCtype[myMesh.get_node_index_list(i_front=True)] = NodeType.INLET
+BCtype[myMesh.get_node_index_list(i_end=True)[10:20]] = NodeType.OUTLET
 
 # ===============================================================
 # Biuld model for simulation
@@ -49,6 +53,6 @@ else:
 myMesh.plot_grid(BCtype)
 
 # create solver
-mySolver = SolverLaplace(myMesh, myCoeff, BCtype, OperatorFDM3D, dir_name)
+mySolver = SolverLaplace(myMesh, myCoeff, BCtype, myOperator, dir_name)
 
 mySolver.start_solve()

@@ -4,17 +4,21 @@ import enum
 import os
 import shutil
 import scipy.sparse as sp
-from scipy.sparse.linalg import bicgstab, spsolve ,gmres ,lgmres
+from scipy.sparse.linalg import bicgstab, spsolve, gmres, lgmres
 
 import matplotlib.pyplot as plt
+from matplotlib import cm
 from mpl_toolkits.mplot3d import Axes3D
 
 class NodeType(enum.IntEnum):
     INTERIOR = 0
-    DIRICHLET = 1
+    WALL = 1
+    INLET = 2
+    OUTLET =3
+
     
-
-
+# http://mragheb.com/NPRE%20498MC%20Monte%20Carlo%20Simulations%20in%20Engineering/Mixed%20Boundary%20Value%20Problems.pdf
+# http://folk.ntnu.no/leifh/teaching/tkt4140/._main056.html
 class SolverLaplace:
 
     def __init__(self, MMesh, CCoeff, BBCtype, OOperatorFDM3D, ddir_name):
@@ -28,8 +32,6 @@ class SolverLaplace:
         
         print ('Laplace solver is created')
 
-    def flatten(self, data):
-        return np.hstack(np.hstack(data))
 
     def _assmemble(self):
 
@@ -42,18 +44,26 @@ class SolverLaplace:
                               self._Opertor.der_1('i').multiply( self._CCoeff.get_inv_metric_tensor(1,1) * self._CCoeff.get_christoffel_symbol(0,1,1)) - \
                               self._Opertor.der_1('j').multiply( self._CCoeff.get_inv_metric_tensor(1,1) * self._CCoeff.get_christoffel_symbol(1,1,1)) - \
                               self._Opertor.der_1('i').multiply( self._CCoeff.get_inv_metric_tensor(0,1) * self._CCoeff.get_christoffel_symbol(0,0,1)) - \
-                              self._Opertor.der_1('j').multiply( self._CCoeff.get_inv_metric_tensor(0,1) * self._CCoeff.get_christoffel_symbol(1,0,1))
+                              self._Opertor.der_1('j').multiply( self._CCoeff.get_inv_metric_tensor(0,1) * self._CCoeff.get_christoffel_symbol(1,0,1)) - \
+                              self._Opertor.der_1('i').multiply( self._CCoeff.get_inv_metric_tensor(1,0) * self._CCoeff.get_christoffel_symbol(0,1,0)) - \
+                              self._Opertor.der_1('j').multiply( self._CCoeff.get_inv_metric_tensor(1,0) * self._CCoeff.get_christoffel_symbol(1,1,0))
                                 )
-
-
-        temp_matrix  = self._Opertor.no_operation()
-
-        self._Opertor.csr_zero_rows( self._SystemMatrix, np.where(self._BCtype == NodeType.DIRICHLET))
-
-        self._Opertor.csr_zero_rows( temp_matrix, np.where(self._BCtype != NodeType.DIRICHLET))
         
-        self._SystemMatrix = self._SystemMatrix + temp_matrix
- 
+        self._Opertor.csr_zero_rows( self._SystemMatrix, np.where( self._BCtype != NodeType.INTERIOR ))
+
+        # NEUMANN
+        temp_matrix1 = (
+        self._Opertor.der_1('i').transpose().multiply( self._CCoeff.get_inv_metric_tensor(0,0)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(0),self._Mesh.out_norm)).transpose() +
+        self._Opertor.der_1('i').transpose().multiply( self._CCoeff.get_inv_metric_tensor(1,0)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(1),self._Mesh.out_norm)).transpose() +
+        self._Opertor.der_1('i').transpose().multiply( self._CCoeff.get_inv_metric_tensor(2,0)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(2),self._Mesh.out_norm)).transpose() +
+        self._Opertor.der_1('j').transpose().multiply( self._CCoeff.get_inv_metric_tensor(0,1)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(0),self._Mesh.out_norm)).transpose() +
+        self._Opertor.der_1('j').transpose().multiply( self._CCoeff.get_inv_metric_tensor(1,1)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(1),self._Mesh.out_norm)).transpose() +
+        self._Opertor.der_1('j').transpose().multiply( self._CCoeff.get_inv_metric_tensor(2,1)*np.einsum('ij, ij->i', self._CCoeff.get_co_basis(2),self._Mesh.out_norm)).transpose() 
+        )
+
+        self._Opertor.csr_zero_rows( temp_matrix1, np.where(self._BCtype == NodeType.INTERIOR))
+
+        self._SystemMatrix = self._SystemMatrix + temp_matrix1
 
         print ('System matrix is created')
 
@@ -67,27 +77,26 @@ class SolverLaplace:
         np.savetxt('./'+ DirName + '/' + FileName,
                    np.column_stack( (self._Mesh.X_flatten, self._Mesh.Y_flatten, self._Phi) ),
                    fmt="%2.5f", delimiter=" , " )
-
     # ============================================
     # Solving processing
     # ============================================
     def start_solve(self):
         
-        B = np.zeros_like(self._Mesh.X)
-        B[-1,:,:] = 100
-        B[0,:,:] = 50
-        B = self.flatten(B)
+        B = np.zeros_like(self._Mesh.X_flatten)
+        B[np.where( (self._BCtype == NodeType.INLET))] = -5.0
+        B[np.where( (self._BCtype == NodeType.OUTLET))] = 10.0
 
         self._Phi = lgmres(self._SystemMatrix, B)[0]
-
-        fig = plt.figure()
-
-        ax = fig.add_subplot(111, projection='3d')
-        cm = plt.cm.get_cmap('rainbow')
-        pnt3d = ax.scatter( self._Mesh.X_flatten, self._Mesh.Y_flatten, self._Mesh.Z_flatten,c = self._Phi, cmap=cm)
-        cbar=plt.colorbar(pnt3d)
         
-        plt.show()
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+        my_cm = plt.cm.get_cmap('rainbow')
+        pnt3d = ax.scatter( self._Mesh.X_flatten, self._Mesh.Y_flatten, self._Phi,c = self._Phi, cmap=my_cm)
+        cbar=plt.colorbar(pnt3d)
 
+
+        plt.show()
+        
         self.printDate(self._dir_name)
+
         print ('Calculation Completed!!!')

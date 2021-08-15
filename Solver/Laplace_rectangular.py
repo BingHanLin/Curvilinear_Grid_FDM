@@ -5,6 +5,7 @@ import os
 import shutil
 import scipy.sparse as sp
 from scipy.sparse.linalg import bicgstab, spsolve, gmres, lgmres
+
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
@@ -16,23 +17,22 @@ class NodeType(enum.IntEnum):
 
 class SolverLaplace:
 
-    def __init__(self, mesh, coeff, BCtype, opertor, dir_name):
+    def __init__(self, mesh, coeff, BCtype, opertor, dirName):
 
         self._mesh = mesh
         self._coeff = coeff
         self._BCtype = BCtype
         self._opertor = opertor
-        self._dir_name = dir_name
+        self._dirName = dirName
         self._assmemble()
-
-        print('Laplace solver is created')
 
     def _assmemble(self):
 
         self._systemMatrix = sp.csr_matrix(
             self._opertor.der_2('i').multiply(self._coeff.get_inv_metric_tensor(0, 0)) +
-            self._opertor.der_2('j').multiply(
-                self._coeff.get_inv_metric_tensor(1, 1))
+            self._opertor.der_2('j').multiply(self._coeff.get_inv_metric_tensor(1, 1)) +
+            self._opertor.der_2('k').multiply(
+                self._coeff.get_inv_metric_tensor(2, 2))
         )
 
         temp_matrix = self._opertor.no_operation()
@@ -49,13 +49,13 @@ class SolverLaplace:
     # # ============================================
     # # Print data to file
     # # ============================================
-    def printDate(self, DirName):
+    def printDate(self, dirName):
 
-        FileName = 'Data.txt'
+        fileName = 'Data.txt'
 
-        np.savetxt('./' + DirName + '/' + FileName,
+        np.savetxt('./' + dirName + '/' + fileName,
                    np.column_stack(
-                       (self._mesh.X_flatten, self._mesh.Y_flatten, self._phi)),
+                       (self._mesh.x_flatten(), self._mesh.y_flatten(), self._phi)),
                    fmt="%2.5f", delimiter=" , ")
 
     # ============================================
@@ -63,11 +63,9 @@ class SolverLaplace:
     # ============================================
     def start_solve(self):
 
-        B = np.zeros_like(self._mesh.x_flatten().T)
-
-        for i in range(len(self._mesh.x_flatten())):
-            if self._mesh.Y_flatten[i] == 1:
-                B[i] = 100
+        B = np.zeros_like(self._mesh.x())
+        B[0, :, :] = 1
+        B = np.reshape(B, self._mesh.node_number(), order='F')
 
         self._phi = lgmres(self._systemMatrix, B)[0]
 
@@ -76,8 +74,9 @@ class SolverLaplace:
         cm = plt.cm.get_cmap('rainbow')
         pnt3d = ax.scatter(self._mesh.x_flatten(), self._mesh.y_flatten(),
                            self._mesh.z_flatten(), c=self._phi, cmap=cm)
+        cbar = plt.colorbar(pnt3d)
 
         plt.show()
 
-        self.printDate(self._dir_name)
+        self.printDate(self._dirName)
         print('Calculation Completed!!!')

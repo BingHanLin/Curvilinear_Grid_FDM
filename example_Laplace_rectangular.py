@@ -4,10 +4,12 @@ http://www.mathematik.uni-dortmund.de/~kuzmin/cfdintro/lecture4.pdf
 import os
 import shutil
 import numpy as np
-from Geometry.RectangularMesh import RectangularMesh
-from DiscreteSchemes.OperatorFDM3D import OperatorFDM3D
-from DiscreteSchemes.CalCoeff import CalCoeff
-from Solver.Laplace_rectangular3D import SolverLaplace, NodeType
+
+from CUR_GRID_FDM.Geometry.BaseMesh import NODELOC
+from CUR_GRID_FDM.DiscreteSchemes import OperatorFDM3D, CalCoeff
+from CUR_GRID_FDM.Geometry import RectangularMesh
+from Solver.Laplace_rectangular import SolverLaplace, NodeType
+
 # ===============================================================
 # Setting Parameters
 # ===============================================================
@@ -16,10 +18,10 @@ Ly = 1
 Lz = 1
 
 nx = 10
-ny = 10
-nz = 10
+ny = 12
+nz = 13
 
-dir_name = 'OUTOUT'
+dirName = 'output'
 
 # ===============================================================
 # Biuld Mesh
@@ -30,13 +32,12 @@ myMesh = RectangularMesh(Lx, nx, Ly, ny, Lz, nz)
 
 # # Calculate coefficients for curvilinear coordinates
 myCoeff = CalCoeff(myMesh)
+myOperator = OperatorFDM3D(myMesh)
 
 # # define boundary type
-BCtype = np.zeros_like(myMesh.X_flatten)
+BCtype = np.zeros_like(myMesh.x_flatten())
 
-BCtype[myMesh.get_node_index_list(i_front = True,i_end = True, 
-                                  j_front = True ,j_end = True, 
-                                  k_front = True ,k_end = True)] = NodeType.DIRICHLET
+BCtype[myMesh.get_node_index_list(NODELOC.INTERIOR, True)] = NodeType.DIRICHLET
 
 
 # ===============================================================
@@ -44,15 +45,15 @@ BCtype[myMesh.get_node_index_list(i_front = True,i_end = True,
 # ===============================================================
 
 # Create folder for output data
-if not os.path.isdir(dir_name):
-    os.makedirs(dir_name)
+if not os.path.isdir(dirName):
+    os.makedirs(dirName)
 else:
-    shutil.rmtree(dir_name)
-    os.makedirs(dir_name)
+    shutil.rmtree(dirName)
+    os.makedirs(dirName)
 
 myMesh.plot_grid(BCtype)
 
 # create solver
-mySolver = SolverLaplace(myMesh, myCoeff, BCtype, OperatorFDM3D, dir_name)
+mySolver = SolverLaplace(myMesh, myCoeff, BCtype, myOperator, dirName)
 
 mySolver.start_solve()

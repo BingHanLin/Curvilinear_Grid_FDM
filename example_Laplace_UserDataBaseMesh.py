@@ -6,18 +6,12 @@ import shutil
 import numpy as np
 
 from CUR_GRID_FDM.DiscreteSchemes import OperatorFDM3D, CalCoeff
-from CUR_GRID_FDM.Geometry import RectangularMesh
-from Solver.Laplace_rectangular2D import SolverLaplace, NodeType
+from CUR_GRID_FDM.Geometry import UserDataBaseMesh, DataBase
+from Solver.LaplaceSolver_UserDataBaseMesh import SolverLaplace, NodeType
 
 # ===============================================================
 # Setting Parameters
 # ===============================================================
-Lx = 1
-Ly = 1
-
-nx = 10
-ny = 10
-
 dir_name = 'OUTOUT'
 
 # ===============================================================
@@ -25,7 +19,8 @@ dir_name = 'OUTOUT'
 # ===============================================================
 
 # create rectangular mesh
-myMesh = RectangularMesh(Lx, nx, Ly, ny)
+myDataBase = DataBase()
+myMesh = UserDataBaseMesh(myDataBase)
 
 # # Calculate coefficients for curvilinear coordinates
 myCoeff = CalCoeff(myMesh)
@@ -33,11 +28,15 @@ myCoeff = CalCoeff(myMesh)
 # define boundary type
 BCtype = np.zeros_like(myMesh.X_flatten)
 
-BCtype[myMesh.get_node_index_list(i_front = True,i_end = True, j_front = True ,j_end = True)] = NodeType.DIRICHLET
+BCtype[myMesh.get_node_index_list(i_front = True)] = NodeType.BOTTOMWALL_1
+BCtype[myMesh.get_node_index_list(j_front = True)] = NodeType.BOTTOMWALL_2
+BCtype[myMesh.get_node_index_list(j_end = True)] = NodeType.TOPWALL
+BCtype[myMesh.get_node_index_list(j_end = True)[:16]] = NodeType.INFLOW
+BCtype[myMesh.get_node_index_list(i_end = True)] = NodeType.OUTFLOW
 
-# ===============================================================
-# Biuld model for simulation
-# ===============================================================
+# # ===============================================================
+# # Biuld model for simulation
+# # ===============================================================
 
 # Create folder for output data
 if not os.path.isdir(dir_name):
