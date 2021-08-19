@@ -1,1 +1,1 @@
-from .VTKIO import StructuredGridWriter
+from .VTKIO import vtkStructuredGridWrapper

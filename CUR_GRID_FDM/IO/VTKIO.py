@@ -4,7 +4,7 @@ import math
 import vtk
 
 
-class StructuredGridWriter:
+class vtkStructuredGridWrapper:
     def __init__(self, mesh: BaseMesh):
         self._mesh = mesh
         self._dims = mesh.mesh_size()
@@ -40,7 +40,7 @@ class StructuredGridWriter:
         self._sgrid.GetPointData().AddArray(array)
 
     def write(self, fileName):
-        writer = vtk.vtkStructuredGridWriter()
+        writer = vtk.vtkvtkStructuredGridWrapper()
         writer.SetFileName(fileName)
         writer.SetInputData(self._sgrid)
         writer.Write()
@@ -55,7 +55,7 @@ class StructuredGridWriter:
         renderer = vtk.vtkRenderer()
         renWin = vtk.vtkRenderWindow()
         renWin.AddRenderer(renderer)
-        renWin.SetWindowName('SGrid')
+        renWin.SetWindowName("vtkStructuredGridWrapper interactor")
 
         iren = vtk.vtkRenderWindowInteractor()
         iren.SetRenderWindow(renWin)
