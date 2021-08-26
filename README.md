@@ -12,14 +12,22 @@
 ## Program Structure
 
 ### DiscreteSchemes
+There two modules provide necessary informations to assemble discrete schemes.
 
-* **CalCoeff.py** \
+* **CalCoeff.py**
 
-* **OperatorFDM3D.py** \
+    Calculate essential coefficients for curvilinear coordinates. A structure mesh is given for computing the coefficients. The available information inlcudes: covariant basis vector, contravariant basis vector, metric tensor and christoffel symbols.
 
-### Solver
+* **OperatorFDM3D.py**
+
+    Genertate the coefficient matrix for 3D finite difference computation. A structure mesh is given for querying the coefficients. The coefficient matrix can be obtained with several kinds of derivative operations.
 
 ### Geometry
+
+    Provide the information of a structure mesh.
+### Solver
+The solvers could be built by the user under specific scenario.
+
 
 ***
 ## Example
