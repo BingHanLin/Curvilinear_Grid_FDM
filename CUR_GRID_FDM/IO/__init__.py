@@ -1,0 +1,1 @@
+from .VTKIO import vtkStructuredGridWrapper

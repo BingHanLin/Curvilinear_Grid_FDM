@@ -101,31 +101,24 @@ class BaseMesh(abc.ABC):
 
         if NODELOC.I_START in loc:
             node_num_list[0, :, :] = 1
-            # print(node_num_list[0, :, :].shape)
 
         if NODELOC.I_END in loc:
             node_num_list[-1, :, :] = 1
-            # print(node_num_list[-1, :, :].shape)
 
         if NODELOC.J_START in loc:
             node_num_list[:, 0, :] = 1
-            # print(node_num_list[:, 0, :].shape)
 
         if NODELOC.J_END in loc:
             node_num_list[:, -1, :] = 1
-            # print(node_num_list[:, -1, :].shape)
 
         if NODELOC.K_START in loc:
             node_num_list[:, :, 0] = 1
-            # print(node_num_list[:, :, 0].shape)
 
         if NODELOC.K_END in loc:
             node_num_list[:, :, -1] = 1
-            # print(node_num_list[:, :, -1].shape)
 
         if NODELOC.INTERIOR in loc:
             node_num_list[1:-1, 1:-1, 1:-1] = 1
-            # print(node_num_list[1:-1, 1:-1, 1:-1].shape)
 
         if NODELOC.ALL in loc:
             node_num_list[:, :, :] = 1

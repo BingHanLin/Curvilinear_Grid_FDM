@@ -21,6 +21,10 @@ nx = 10
 ny = 12
 nz = 13
 
+amp_x = 0.25
+amp_y = 0.25
+amp_z = 0.25
+
 dirName = 'output'
 
 # ===============================================================
@@ -28,7 +32,7 @@ dirName = 'output'
 # ===============================================================
 
 # create rectangular mesh
-myMesh = CurveRectangularMesh(Lx, nx, Ly, ny, Lz, nz)
+myMesh = CurveRectangularMesh(Lx, nx, amp_x, Ly, ny, amp_y, Lz, nz, amp_z)
 
 # # Calculate coefficients for curvilinear coordinates
 myCoeff = CalCoeff(myMesh)
