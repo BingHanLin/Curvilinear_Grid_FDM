@@ -8,7 +8,7 @@ import numpy as np
 from CUR_GRID_FDM.Geometry.BaseMesh import NODELOC
 from CUR_GRID_FDM.DiscreteSchemes import OperatorFDM3D, CalCoeff
 from CUR_GRID_FDM.Geometry import RectangularMesh
-from Solver.Laplace_rectangular import SolverLaplace, NodeType
+from Solver.LaplaceSolver import SolverLaplace, NodeType
 
 # ===============================================================
 # Setting Parameters

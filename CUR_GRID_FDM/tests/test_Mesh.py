@@ -10,7 +10,8 @@ class CurveRectangularMeshTestCase(unittest.TestCase):
     # def tearDown(self):
 
     def test_CurveRectangularMeshInfo(self):
-        mesh = CurveRectangularMesh(2.0, 10, 1.0, 10, 1.0, 5)
+        mesh = CurveRectangularMesh(
+            1.0, 10, 0.25, 1.0, 10, 0.25,  1.0, 5, 0.25)
         self.assertEqual(mesh.node_number(), 10*10*5)
         self.assertEqual(mesh.mesh_size(), (10, 10, 5))
 

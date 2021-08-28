@@ -5,6 +5,7 @@ import numpy as np
 class RectangularMesh(BaseMesh):
 
     def __init__(self, lx: float, nx: int, ly: float, ny: int, lz: float, nz: int):
+        super().__init__()
 
         self._lx = lx
         self._ly = ly

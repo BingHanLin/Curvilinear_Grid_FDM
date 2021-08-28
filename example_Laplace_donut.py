@@ -8,8 +8,9 @@ import numpy as np
 from CUR_GRID_FDM.Geometry.BaseMesh import NODELOC
 from CUR_GRID_FDM.DiscreteSchemes import OperatorFDM3D, CalCoeff
 from CUR_GRID_FDM.Geometry import DonutMesh
-from Solver.LaplaceSolver_donut import SolverLaplace, NodeType
+from Solver.LaplaceSolver import SolverLaplace, NodeType
 
+import numpy as np
 # ===============================================================
 # Setting Parameters
 # ===============================================================
@@ -20,7 +21,7 @@ dirName = 'output'
 # ===============================================================
 
 # create rectangular mesh
-myMesh = DonutMesh(3.0, 12.0, 10, 36, 10.0, 6)
+myMesh = DonutMesh(3.0, 12.0, 10, 36, 10.0, 6, 2*np.pi/2.0)
 
 # Calculate coefficients for curvilinear coordinates
 myCoeff = CalCoeff(myMesh)

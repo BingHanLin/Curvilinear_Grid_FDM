@@ -31,12 +31,17 @@ The solvers could be built by the user under specific scenario.
 
 ***
 ## Example
+**LAPLACE equation**
+
+Laplace equation is solved in a (1) rectangular, (1) curved rectangular and (3) cylindrical domain with dirichlet boundary conditions on all sides.
+![](/asset/rectangular.png)
+![](/asset/curvedRectangular.png)
+![](/asset/cylindrical.png)
 
 
 ***
 ## References
-[1] 
+[1] [Python unit test](https://docs.python.org/zh-tw/3/library/unittest.html#command-line-interface)
 
-https://docs.python.org/zh-tw/3/library/unittest.html#command-line-interface
+[2] [Python unit test](https://openhome.cc/Gossip/CodeData/PythonTutorial/UnitTestPy3.html)
 
-https://openhome.cc/Gossip/CodeData/PythonTutorial/UnitTestPy3.html

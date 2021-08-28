@@ -18,6 +18,9 @@ class NODELOC(IntFlag):
 
 class BaseMesh(abc.ABC):
 
+    def __init__(self):
+        pass
+
     @abc.abstractmethod
     def _create_grid(self):
         pass
