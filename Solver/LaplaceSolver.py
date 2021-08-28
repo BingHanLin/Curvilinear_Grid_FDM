@@ -9,6 +9,8 @@ from scipy.sparse.linalg import bicgstab, spsolve, gmres, lgmres
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
+from CUR_GRID_FDM.IO import vtkStructuredGridWrapper
+
 
 class NodeType(enum.IntEnum):
     INTERIOR = 0
@@ -110,7 +112,7 @@ class SolverLaplace:
 
         # B[:, 0, :] = 100
         # B[:, -1, :] = 0
-        B[0, :, :] = 50
+        # B[0, :, :] = 50
         B[-1, :, :] = 100
         # B[:, :, 0] = 50
         # B[:, :, -1] = 100
@@ -129,4 +131,8 @@ class SolverLaplace:
         plt.show()
 
         self.printDate(self._dirName)
+
+        writer = vtkStructuredGridWrapper(self._mesh)
+        writer.addScalrDataArray("var", self._phi)
+        writer.write(self._dirName+"/test.vtk")
         print('Calculation Completed!!!')

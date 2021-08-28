@@ -40,7 +40,7 @@ class vtkStructuredGridWrapper:
         self._sgrid.GetPointData().AddArray(array)
 
     def write(self, fileName):
-        writer = vtk.vtkvtkStructuredGridWrapper()
+        writer = vtk.vtkStructuredGridWriter()
         writer.SetFileName(fileName)
         writer.SetInputData(self._sgrid)
         writer.Write()
