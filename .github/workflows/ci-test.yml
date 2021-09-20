@@ -3,7 +3,7 @@ name: CI (main)
 on:
   push:
     branches:
-      - 'main'
+      - '**'
 
 jobs:
   unit:
