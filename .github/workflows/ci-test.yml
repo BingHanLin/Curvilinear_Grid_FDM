@@ -27,4 +27,4 @@ jobs:
           if [ -f requirements-ci.txt ]; then pip install -r requirements-ci.txt; fi
       - name: Test with pytest
         run: |
-          python -m unittest CUR_GRID_FDM/tests/test_*.py
+          python -m unittest CUR_GRID_FDM/tests/test_Mesh.py
