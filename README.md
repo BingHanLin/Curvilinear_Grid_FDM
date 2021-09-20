@@ -45,3 +45,9 @@ Laplace equation is solved in a (1) rectangular, (1) curved rectangular and (3) 
 
 [2] [Python unit test](https://openhome.cc/Gossip/CodeData/PythonTutorial/UnitTestPy3.html)
 
+
+[3] [Finite Difference Coefficients Calculator](https://web.media.mit.edu/~crtaylor/calculator.html)
+
+
+
+
