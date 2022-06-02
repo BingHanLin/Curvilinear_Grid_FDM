@@ -5,13 +5,13 @@
 
 ***
 ## Brief theoretical description
-
+TBD
 
 
 ***
 ## Program Structure
 
-### DiscreteSchemes
+### CUR_GRID_FDM/DiscreteSchemes
 There two modules provide necessary informations to assemble discrete schemes.
 
 * **CalCoeff.py**
@@ -22,11 +22,24 @@ There two modules provide necessary informations to assemble discrete schemes.
 
     Genertate the coefficient matrix for 3D finite difference computation. A structure mesh is given for querying the coefficients. The coefficient matrix can be obtained with several kinds of derivative operations.
 
-### Geometry
+### CUR_GRID_FDM/Geometry
+Provide the information of a structure mesh.
 
-    Provide the information of a structure mesh.
+* **RectangularMesh.py**
+    
+    Provide a structural rectangular mesh.
+
+* **CurveRectangularMesh.py**
+    
+    Provide a structural curve rectangular mesh.
+
+* **DonutMesh.py**
+    
+    Provide a structural donut mesh.
+
+
 ### Solver
-The solvers could be built by the user under specific scenario.
+The different solvers that need to be built by the user under specific scenario.
 
 
 ***
