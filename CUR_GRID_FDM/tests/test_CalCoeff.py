@@ -16,6 +16,7 @@ class CalCoeffTestCase(unittest.TestCase):
     # def tearDown(self):
 
     def test_covariantBasis(self):
+        print(".................?")
         self.assertTrue(abs(self.coeff.get_co_basis(
             0)[4][0] - (math.sqrt(3.0)/2.0)) < 10e-8)
         self.assertTrue(abs(self.coeff.get_co_basis(
@@ -38,6 +39,10 @@ class CalCoeffTestCase(unittest.TestCase):
             2)[0][2] - 1.0) < 10e-8)
 
     def test_contravariantBasis(self):
+        print(np.dot(self.coeff.get_co_basis(
+            0)[10], self.coeff.get_con_basis(
+            0)[10]))
+
         self.assertTrue(np.dot(self.coeff.get_co_basis(
             0)[10], self.coeff.get_con_basis(
             0)[10]) == 1.0)

@@ -2,3 +2,4 @@
 *.vtk
 cur-grid-fdm-env
 output
+env
